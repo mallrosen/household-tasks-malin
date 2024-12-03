@@ -19,11 +19,11 @@ const Overview: React.FC = () => {
       const tasksData = await fetchTasks();
       setTasks(tasksData);
 
-      const householdData = await fetchHousehold(usersData[0].id);
+      const householdData = await fetchHousehold(usersData[0].created_at);
       setHousehold(householdData || null);
 
-      if (householdData && householdData[0]?.id) {
-        const membersData = await fetchMembers(householdData[0].id);
+      if (householdData && householdData[0]?.household_id) {
+        const membersData = await fetchMembers(householdData[0].household_id);
         setMembers(membersData || []);
       }
   
@@ -38,13 +38,13 @@ const Overview: React.FC = () => {
       <h2>Users</h2>
       <ul>
         {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
+          <li key={user.user_id}>{user.username}</li>
         ))}
       </ul>
       <h2>Tasks</h2>
       <ul>
         {tasks.map((task) => (
-          <li key={task.id}>{task.name}</li>
+          <li key={task.task_id}>{task.name}</li>
         ))}
       </ul>
       <h2>Household</h2>
