@@ -1,5 +1,5 @@
 export interface IMembers {
-    member_id: number;    
+    member_id: string;    
     user_id: string;  
     household_id: number;  
     role?: string | null;

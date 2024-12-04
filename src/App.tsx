@@ -1,15 +1,20 @@
-import './App.css'
-import Overview from './components/overview.tsx'
+import './App.css';
+import { Overview } from "./pages/Overview";
+import { Tasks } from './pages/Tasks';
+import { SignUpForm } from "./components/SignUpForm";
+
+
 
 function App() {
-
-
   return (
     <>
-    <p>HEJHEJ</p>
-    <Overview/>
+    <SignUpForm/>
+    <Tasks tasks={[]} />
+    <Overview setHouseholdId={function (id: string): void {
+      console.log(id);
+      ;
+    } } />
     </>
-  )
+  );  
 }
-
 export default App;

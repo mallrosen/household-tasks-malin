@@ -1,10 +1,8 @@
 export interface IUser {
-    name: string;
-    id: number;
-    user_id: number;   
+    user_id: string;   
     username: string;   
-    created_at: Date;
-    updated_at: Date; 
+    created_at: string;
+    updated_at: string; 
     total_points: number; 
     weekly_points: number; 
   }

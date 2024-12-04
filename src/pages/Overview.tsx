@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchUsers, fetchTasks, fetchHousehold, fetchMembers } from '../services/superbaseService';
 import { IUser } from '../models/IUser';
 import { ITask } from '../models/ITask';
 import { IHousehold } from '../models/IHousehold';
 import { IMembers } from '../models/IMembers';
 
-const Overview: React.FC = () => {
+interface OverviewProps {
+  setHouseholdId: (id: string) => void;
+}
+
+export const Overview = ({ setHouseholdId } : OverviewProps) => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [tasks, setTasks] = useState<ITask[]>([]); 
   const [household, setHousehold] = useState<IHousehold[] | null>(null);
@@ -13,26 +17,33 @@ const Overview: React.FC = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const usersData = await fetchUsers();
-      setUsers(usersData);
+      try {
+        const usersData = await fetchUsers();
+        setUsers(usersData);
 
-      const tasksData = await fetchTasks();
-      setTasks(tasksData);
+        const tasksData = await fetchTasks();
+        setTasks(tasksData);
 
-      const householdData = await fetchHousehold(usersData[0].created_at);
-      setHousehold(householdData || null);
+        if (usersData.length > 0) {
+          const householdData = await fetchHousehold(usersData[0].user_id);
+          setHousehold(householdData || null);
 
-      if (householdData && householdData[0]?.household_id) {
-        const membersData = await fetchMembers(householdData[0].household_id);
-        setMembers(membersData || []);
+          if (householdData && householdData[0]?.household_id) {
+            setHouseholdId(householdData[0].household_id); 
+            const membersData = await fetchMembers(householdData[0].household_id);
+            setMembers(membersData || []);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-  
     }
 
     fetchData();
-  }, []); // Kanske skapa bättre dependencyarray??
+  }, [setHouseholdId]);
 
   return (
+
     <div>
       <h1>Overview</h1>
       <h2>Users</h2>
@@ -58,5 +69,3 @@ const Overview: React.FC = () => {
     </div>
   );
 };
-
-export default Overview;

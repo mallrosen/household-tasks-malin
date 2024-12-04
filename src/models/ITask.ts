@@ -1,9 +1,9 @@
 export interface ITask {
-    id: number;    
+    task_id: string; 
+    created_at: string;   
     name: string;  
     difficulty: number;  
     points: number;  
-    household_id: number; 
-    created_at: Date;
-    status: boolean
+    status: boolean;
+    member_id: string | null; 
   }
