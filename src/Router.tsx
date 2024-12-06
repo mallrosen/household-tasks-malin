@@ -3,6 +3,10 @@ import { Overview } from "./pages/Overview";
 import { Layout } from "./pages/Layout";
 import { NotFound } from "./pages/NotFound";
 import { Tasks } from "./pages/Tasks";
+import { LogInForm } from "./components/LoginForm"; // Startsida för inloggning 
+import { SignUpForm } from "./components/SignUpForm"; // Registreringssida
+import { Dashboard } from "./pages/Dashboard"
+import { HouseholdPage } from "./pages/HouseholdPage";
 
 export const router = createBrowserRouter([
   {
@@ -10,20 +14,31 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: '/',
+        path: '/', 
+        element: <LogInForm />,
+      },
+      {
+        path: '/signup', 
+        element: <SignUpForm />,
+      },
+      {
+        path: '/dashboard', 
+        element: <Dashboard />,
+      },
+      {
+        path: '/overview', 
         element: (
-            <Overview
-                setHouseholdId={(id) => {
-                console.log(id);    
-            }}
-          />
+          <Overview householdId={""} userId={""} householdName={""}/>
         ),
       },
       {
-        path: '/tasks/:householdId',
+        path: '/tasks',  //HUSHÅLLS ID??
         element: <Tasks tasks={[]} />,
       },
-
+      {
+        path: '/household/:householdId',
+        element: <HouseholdPage />
+      }
     ],
     errorElement: <NotFound />,
   },

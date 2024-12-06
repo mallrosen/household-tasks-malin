@@ -1,20 +1,12 @@
 import './App.css';
-import { Overview } from "./pages/Overview";
-import { Tasks } from './pages/Tasks';
-import { SignUpForm } from "./components/SignUpForm";
 
-
+import { RouterProvider } from "react-router-dom";
+import { router } from "./Router";
 
 function App() {
-  return (
-    <>
-    <SignUpForm/>
-    <Tasks tasks={[]} />
-    <Overview setHouseholdId={function (id: string): void {
-      console.log(id);
-      ;
-    } } />
-    </>
-  );  
+  return <>
+  <RouterProvider router={router}></RouterProvider>
+  </>;
 }
+
 export default App;
