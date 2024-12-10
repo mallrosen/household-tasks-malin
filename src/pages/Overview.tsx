@@ -18,21 +18,20 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
   const [members, setMembers] = useState<IMembers[]>([]);
   const [userPoints, setUserPoints] = useState<number>(0);
 
-
   useEffect(() => {
     async function fetchData() {
       try {
         const usersData = await fetchUsers();
         setUsers(usersData);
 
-        const tasksData = await fetchTasks();
-        setTasks(tasksData); // GÖR SÅ MAN BARA KAN SE FÖR SITT HUSHÅLL
-
         const householdData = await fetchHousehold(userId);
         setHousehold(householdData ? householdData[0] : null);
 
         const membersData = await fetchMembers(householdId);
         setMembers(membersData);
+
+        const tasksData = await fetchTasks(householdId);
+        setTasks(tasksData || []);
 
         const user = usersData.find((user) => user.user_id === userId);
         if (user) {
@@ -46,8 +45,12 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
     fetchData();
   }, [householdId, userId]); 
 
-  const householdUsers = users.filter(user =>
+  const householdUsers = users.filter(user => 
     members.some(member => member.user_id === user.user_id)
+  );
+
+  const filteredTasks = tasks.filter(() =>
+    members.some(member => member.user_id === userId)
   );
 
   return (
@@ -69,7 +72,7 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
 
       <h2>Tasks</h2>
       <ul>
-        {tasks.map((task) => (
+        {filteredTasks.map(task => (
           <li key={task.task_id}>{task.name}</li>
         ))}
       </ul>

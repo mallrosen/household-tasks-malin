@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: '/tasks',  //HUSHÅLLS ID??
+        path: '/tasks/:householdId',
         element: <Tasks tasks={[]} />,
       },
       {

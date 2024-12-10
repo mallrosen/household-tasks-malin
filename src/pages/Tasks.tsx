@@ -8,18 +8,23 @@ interface TasksProps {
   tasks: ITask[];
 }
 
-export const Tasks = ({ tasks: initialTasks } : TasksProps) => {
-    const { householdId } = useParams<{householdId:string}>();
-    const [tasks, setTasks] = useState<ITask[]>(initialTasks);
+export const Tasks = ({ tasks: initialTasks }: TasksProps) => {
+  const { householdId } = useParams<{ householdId: string }>();
+  console.log('Household ID from useParams:', householdId);
 
-useEffect(() => {
-  const fetchAndSetTasks = async () => {
-    const fetchedTasks = await fetchTasks();
-    setTasks(fetchedTasks);
-  };
+  const [tasks, setTasks] = useState<ITask[]>(initialTasks);
 
-  fetchAndSetTasks();
-}, [householdId]);
+  useEffect(() => {
+    const fetchAndSetTasks = async () => {
+      if (householdId) {
+        const fetchedTasks = await fetchTasks(householdId);
+        const filteredTasks = fetchedTasks ? fetchedTasks.filter(task => task.member_id && task.member.household_id === householdId) : [];
+        setTasks(filteredTasks);
+      }
+    };
+
+    fetchAndSetTasks();
+  }, [householdId]);
 
   return (
     <div>
@@ -27,7 +32,9 @@ useEffect(() => {
       <AddTaskForm householdId={householdId} />
       <ul>
         {tasks.map(task => (
-          <li key={task.task_id}>{task.name}</li>
+          <li key={task.task_id}>
+            {task.name} (Difficulty: {task.difficulty}, Points: {task.points})
+          </li>
         ))}
       </ul>
     </div>

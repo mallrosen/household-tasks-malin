@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateHouseholdForm } from '../components/CreateHousehold';
 import { Overview } from './Overview';
-import { getSession, fetchHousehold, fetchMembers } from '../services/superbaseService';
-import { supabase } from '../supabaseClient';
+import { getSession, fetchHousehold } from '../services/superbaseService';
+import { supabase } from '../services/supabaseClient';
 import { JoinHouseholdForm } from '../components/JoinHousehold';
 
 export const Dashboard = () => {
   const [householdName, setHouseholdName] = useState('');
-  const [existingHouseholdId, setExistingHouseholdId] = useState('');
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [householdCreated, setHouseholdCreated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -29,6 +28,7 @@ export const Dashboard = () => {
         setUserId(currentUserId);
 
         const householdData = await fetchHousehold(currentUserId);
+        console.log('Fetched household data:', householdData); 
 
         if (householdData && householdData.length > 0) {
           setHouseholdId(householdData[0].household_id);
@@ -53,62 +53,78 @@ export const Dashboard = () => {
         setError('You must be logged in to create a household.');
         return;
       }
-
+  
       const { data: householdData, error } = await supabase
         .from('Household')
         .insert([{ name, created_by: userId }])
         .select();
-
+  
+      console.log('Household creation response:', householdData); 
       if (error || !householdData) {
-        setError('Error creating household: ' + error);
+        setError('Error creating household: ' + error?.message);
         return;
       }
+  
 
-      const newHouseholdId = householdData[0].household_id;
-
+  
       const { error: memberError } = await supabase
         .from('Members')
         .insert([{ user_id: userId, household_id: householdId, role: 'admin' }]);
-
+  
       if (memberError) {
-        setError('Error adding user to household: ' + error);
+        setError('Error adding user to household: ' + memberError.message);
         return;
       }
-
-      navigate(`/household/${householdId}`);
-    } catch (err) {
+  
+      setHouseholdId(householdId); 
+      setHouseholdName(name); 
+      setHouseholdCreated(true); 
+      navigate(`/household/${householdId}`); 
+    } catch (error) {
       setError('Error creating household: ' + error);
     }
   };
+  
 
-  const joinHousehold = async () => {
+  const joinHousehold = async (householdName: string) => {
     try {
-      if (!existingHouseholdId) {
-        setError('Please provide a valid household ID.');
+      if (!userId) {
+        setError('You must be logged in to join a household.');
         return;
       }
+  
 
-      const members = await fetchMembers(existingHouseholdId);
-
-      if (!members || members.length === 0) {
-        setError('No such household found.');
+      const { data: householdData, error: fetchError } = await supabase
+        .from('Household')
+        .select('household_id')
+        .eq('name', householdName)
+        .limit(1)
+        .single(); 
+  
+      if (fetchError || !householdData) {
+        setError('Household not found.');
         return;
       }
-
-      const { error } = await supabase
+  
+      const householdId = householdData.household_id;
+  
+      // Lägg till användaren i Members-tabellen
+      const { error: memberError } = await supabase
         .from('Members')
-        .insert([{ user_id: userId, household_id: existingHouseholdId, role: 'member' }]);
-
-      if (error) {
-        setError('Error joining household: ' + error);
+        .insert([{ user_id: userId, household_id: householdId, role: 'member' }]);
+  
+      if (memberError) {
+        setError('Error joining household: ' + memberError.message);
         return;
       }
-
-      navigate(`/household/${existingHouseholdId}`);
-    } catch (err) {
+  
+      // Om det fungerar, navigera till hushållets sida
+      navigate(`/household/${householdId}`);
+    } catch (error) {
       setError('Error joining household: ' + error);
     }
   };
+  
 
   return (
     <div>
