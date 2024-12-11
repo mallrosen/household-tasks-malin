@@ -1,74 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../services/supabaseClient';
-import { getSession } from '../services/superbaseService';
+import { FormEvent, useState } from 'react';
 
-interface TasksProps {
+interface Task {
+  task_id: string;
   name: string;
   difficulty: number;
   points: number;
+  status: boolean; 
+  member_id: string;
 }
 
 interface AddTaskFormProps {
-  householdId: string | undefined;  
+  handleSumbit: (task: Task) => void;
 }
 
-export const AddTaskForm = ({ householdId }: AddTaskFormProps) => {
-  const [task, setTask] = useState<TasksProps>({
+export const AddTaskForm = ({handleSumbit}: AddTaskFormProps) => {
+  const [task, setTask] = useState({
+    task_id: '',
     name: '',
     difficulty: 1,
     points: 10,
+    status: false,
+    member_id: '',
   });
-  const [error, setError] = useState('');
-  const [memberId, setMemberId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUserIdAndMemberId = async () => {
-      const session = await getSession();
-      if (session?.user?.id) {
-        const { data, error } = await supabase
-          .from('Members')
-          .select('member_id')
-          .eq('user_id', session.user.id)
-          .eq('household_id', householdId)
-          .single();  
-
-        if (error) {
-          setError('Error fetching member info: ' + error.message);
-        } else if (data) {
-          setMemberId(data.member_id);
-        }
-      } else {
-        setError('User is not logged in.');
-      }
-    };
-
-    fetchUserIdAndMemberId();
-  }, [householdId]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    if (!householdId || !memberId) {
-      console.error('Household ID or Member ID is missing!');
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from('Tasks')
-      .insert({
-        name: task.name,
-        difficulty: task.difficulty,
-        points: task.points,
-        status: false,
-        member_id: memberId,
-      });
-
-    if (error) {
-      setError('Error adding task: ' + error.message);
-    } else {
-      console.log('Task added successfully:', data);
-      setTask({ name: '', difficulty: 1, points: 10 });
-    }
+    handleSumbit(task);
   };
 
   return (
@@ -91,9 +48,7 @@ export const AddTaskForm = ({ householdId }: AddTaskFormProps) => {
             value={task.difficulty}
             min="1"
             max="3"
-            onChange={(e) =>
-              setTask({ ...task, difficulty: parseInt(e.target.value) })
-            }
+            onChange={(e) => setTask({ ...task, difficulty: parseInt(e.target.value) })}
             required
           />
         </div>
@@ -108,8 +63,8 @@ export const AddTaskForm = ({ householdId }: AddTaskFormProps) => {
         </div>
         <button type="submit">Add Task</button>
       </form>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };
+
+

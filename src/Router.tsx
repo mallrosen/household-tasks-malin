@@ -3,7 +3,7 @@ import { Overview } from "./pages/Overview";
 import { Layout } from "./pages/Layout";
 import { NotFound } from "./pages/NotFound";
 import { Tasks } from "./pages/Tasks";
-import { LogInForm } from "./components/LoginForm"; // Startsida för inloggning 
+import { LogInForm } from "./components/LogInForm"; // Startsida för inloggning 
 import { SignUpForm } from "./components/SignUpForm"; // Registreringssida
 import { Dashboard } from "./pages/Dashboard"
 import { HouseholdPage } from "./pages/HouseholdPage";
@@ -28,12 +28,12 @@ export const router = createBrowserRouter([
       {
         path: '/overview', 
         element: (
-          <Overview householdId={""} userId={""} householdName={""}/>
+          <Overview householdId={''} userId={''} householdName={''}/>
         ),
       },
       {
-        path: '/tasks/:householdId',
-        element: <Tasks tasks={[]} />,
+        path: '/tasks/:householdId/:memberId',
+        element: <Tasks taskList={[]} memberId={''} />,
       },
       {
         path: '/household/:householdId',

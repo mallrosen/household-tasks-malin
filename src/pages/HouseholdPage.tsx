@@ -6,20 +6,23 @@ import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
 
 export const HouseholdPage = () => {
-  const { householdId } = useParams(); 
+  const { householdId, memberId } = useParams<{ householdId: string, memberId: string}>(); 
   const [household, setHousehold] = useState<IHousehold | null>(null);
   const [members, setMembers] = useState<IMembers[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
-  const [error, setError] = useState('');
-  const [userIsMember, setUserIsMember] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userIsMember, setUserIsMember] = useState(false);
 
   useEffect(() => {
+    console.log('Household ID:', householdId);
+    console.log('Member ID:', memberId);
+
     const fetchHouseholdData = async () => {
       if (!householdId) {
         setError('Household ID is missing');
         return;
       }
-
+  
       try {
         const session = await getSession();
         const userId = session?.user?.id;
@@ -34,7 +37,9 @@ export const HouseholdPage = () => {
         if (!householdData || householdData.length === 0) {
           setError('No household found or you are not a member of any household.');
           return;
+          
         }
+   
 
         const matchedHousehold = householdData.find(h => h.household_id === householdId);
 
@@ -60,34 +65,33 @@ export const HouseholdPage = () => {
           setUserIsMember(false);
         }
 
-
         const usersData = await fetchUsers();
         setUsers(usersData);
       } catch (error) {
-        setError('Error fetching data: ' + error);
+        setError('Error fetching data: ' + (error as Error).message);
       }
     };
 
     fetchHouseholdData();
   }, [householdId]);
 
-  const getUsername = (userId: string) => {
+  const getUsername = (userId: string): string => {
     const user = users.find(user => user.user_id === userId);
     return user ? user.username : 'Unknown user';
   };
 
   if (error) {
-    return <p style={{ color: 'red' }}>{error}</p>;
+    return <div>{error}</div>;
   }
 
   if (!userIsMember) {
-    return <p>You are not a member of this household.</p>;
+    return <div>You are not a member of this household.</div>;
   }
 
   return (
     <div>
-      <h2>Household Information</h2>
-      <p>{household ? `Household: ${household.name}` : 'No household found'}</p>
+      <h1>Household Information</h1>
+      <h2>{household ? `Household: ${household.name}` : 'No household found'}</h2>
       <h3>Members:</h3>
       <ul>
         {members.map(member => (
