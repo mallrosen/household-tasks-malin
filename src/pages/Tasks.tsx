@@ -1,57 +1,53 @@
-import { useEffect, useState } from 'react';
-import { AddTaskForm } from "../components/AddTaskForm";
-import { fetchTasks, getSession } from '../services/superbaseService';
-import { ITask } from '../models/ITask';
+import { useEffect } from 'react';
+import { useUserAndTasks } from '../hooks/useUserAndTasks'; 
 import { supabase } from '../services/supabaseClient';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { AddTaskForm } from '../components/AddTaskForm';
+import { fetchTasks, getSession } from '../services/superbaseService';
 
-interface TasksProps {
-  taskList: ITask[];
-  memberId: string;
-}
-
-export const Tasks = ({ taskList: initialTaskList }: TasksProps) => {
-  const [memberId, setMemberId] = useState<string | null>(null);
-  const [taskList, setTaskList] = useState<ITask[]>(initialTaskList);
-  const [error, setError] = useState<string | null>(null);
+export const Tasks = () => {
+  const { memberId, taskList, setTaskList, userPoints, setUserPoints, error, setError } = useUserAndTasks();
 
   useEffect(() => {
-    const fetchUserIdAndMemberId = async () => {
-      const session = await getSession();
-      if (session?.user?.id) {
-        const { data, error } = await supabase
-          .from('Members')
-          .select('member_id')
-          .eq('user_id', session.user.id)
-          .single();
+    const fetchTasksForMember = async () => {
+      if (!memberId) return;
 
-        if (error) {
-          setError('Error fetching member info: ' + error.message);
-        } else if (data) {
-          setMemberId(data.member_id);
-        }
+      const tasks = await fetchTasks(memberId);
+      if (tasks) {
+        setTaskList(tasks);
       } else {
-        setError('User is not logged in.');
+        setError('Error fetching tasks');
       }
     };
 
-    const fetchAndSetTasks = async () => {
-      if (memberId) {
-        const fetchedTasks = await fetchTasks(memberId);
-        if (fetchedTasks) {
-          setTaskList(fetchedTasks);
-        } else {
-          setError('Error fetching tasks.');
-        }
+    fetchTasksForMember();
+  }, [memberId, setTaskList, taskList]);
+
+  const handleRemove = async (taskId: string) => {
+    try {
+      console.log('Attempting to delete task with ID:', taskId);
+      const { error } = await supabase
+        .from('Tasks')
+        .delete()
+        .eq('task_id', taskId);
+
+      if (error) {
+        console.error('Error deleting task:', error.message);
+        setError('Error deleting task: ' + error.message);
+      } else {
+        console.log('Task deleted successfully from database');
+        setTaskList((prevTaskList) => prevTaskList.filter((task) => task.task_id !== taskId));
       }
-    };
-
-    fetchUserIdAndMemberId();
-    fetchAndSetTasks();
-  }, [memberId]);
-
+    } catch (error) {
+      console.error('Error deleting task:', (error as Error).message);
+      setError('Error deleting task: ' + (error as Error).message);
+    }
+  };
+  
   const handleSubmit = async (task: { name: string; difficulty: number; points: number; status: boolean; member_id: string }) => {
     if (!memberId) {
-      console.error('Member ID is missing!');
+      setError('Member ID is missing!');
       return;
     }
 
@@ -70,29 +66,61 @@ export const Tasks = ({ taskList: initialTaskList }: TasksProps) => {
     } else {
       console.log('Task added successfully:', data);
       if (data) {
-        setTaskList([...taskList, data[0]]);
+        setTaskList((prevTaskList) => [...prevTaskList, data[0]]);
       }
     }
   };
+
+
 
   const toggleTaskCompletion = async (taskId: string) => {
     const task = taskList.find(t => t.task_id === taskId);
-    if (!task || task.status) return; // Om uppgiften redan är klar, gör ingenting.
-
-    const { data, error } = await supabase
-      .from('Tasks')
-      .update({ status: true }) // Markera som klar
-      .eq('task_id', taskId);
-
-    if (error) {
-      setError('Error updating task: ' + error.message);
-    } else {
-      console.log('Task updated successfully:', data);
-      if (data) {
-        setTaskList(taskList.map(t => t.task_id === taskId ? { ...t, status: true } : t));
+    if (!task || task.status) return; 
+    try {
+      const { data: taskUpdateData, error: taskUpdateError } = await supabase
+        .from('Tasks')
+        .update({ status: true })
+        .eq('task_id', taskId)
+        .single();
+  
+      if (taskUpdateError) {
+        setError('Error updating task: ' + taskUpdateError.message);
+        return;
       }
+  
+      console.log('Task completed:', taskUpdateData);
+  
+      setTaskList(prevTaskList =>
+        prevTaskList.map(t => t.task_id === taskId ? { ...t, status: true } : t)
+      );
+  
+      const session = await getSession();
+      const userId = session?.user?.id;
+  
+      if (userId) {
+        const updatedPoints = userPoints + (task?.points || 0); 
+  
+        const { error: pointsUpdateError } = await supabase
+          .from('Users')
+          .update({ total_points: updatedPoints })
+          .eq('user_id', userId);
+  
+        if (pointsUpdateError) {
+          setError('Error updating user points: ' + pointsUpdateError.message);
+          return;
+        }
+  
+        console.log('User points updated successfully.');
+        setUserPoints(updatedPoints); 
+      }
+    } catch (error) {
+      setError('Error completing task: ' + (error as Error).message);
     }
   };
+  
+  if (!memberId) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -102,6 +130,7 @@ export const Tasks = ({ taskList: initialTaskList }: TasksProps) => {
           <li key={task.task_id}>
             <span style={{ textDecoration: task.status ? 'line-through' : 'none' }}>
               {task.name} (Difficulty: {task.difficulty}, Points: {task.points})
+              <button onClick={() => handleRemove(task.task_id)}><FontAwesomeIcon icon={faTrash} /></button>
             </span>
             {!task.status && (
               <button onClick={() => toggleTaskCompletion(task.task_id)}>Complete</button>
@@ -109,8 +138,7 @@ export const Tasks = ({ taskList: initialTaskList }: TasksProps) => {
           </li>
         ))}
       </ul>
-      <AddTaskForm handleSumbit={handleSubmit} />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <AddTaskForm handleSubmit={handleSubmit} />
     </div>
   );
 };

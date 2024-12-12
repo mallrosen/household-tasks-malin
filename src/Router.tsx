@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/tasks/:householdId/:memberId',
-        element: <Tasks taskList={[]} memberId={''} />,
+        element: <Tasks />,
       },
       {
         path: '/household/:householdId',

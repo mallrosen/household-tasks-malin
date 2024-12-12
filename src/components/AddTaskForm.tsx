@@ -10,10 +10,10 @@ interface Task {
 }
 
 interface AddTaskFormProps {
-  handleSumbit: (task: Task) => void;
+  handleSubmit: (task: Task) => void;
 }
 
-export const AddTaskForm = ({handleSumbit}: AddTaskFormProps) => {
+export const AddTaskForm = ({ handleSubmit }: AddTaskFormProps) => {
   const [task, setTask] = useState({
     task_id: '',
     name: '',
@@ -23,41 +23,47 @@ export const AddTaskForm = ({handleSumbit}: AddTaskFormProps) => {
     member_id: '',
   });
 
-  const handleSubmit = (e: FormEvent) => {
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    handleSumbit(task);
+    handleSubmit(task);
+    setTask({
+      task_id: '',
+      name: '',
+      difficulty: 1,
+      points: 10,
+      status: false,
+      member_id: '',
+    });
   };
 
   return (
     <div>
       <h3>Add Task</h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onSubmit}>
         <div>
-          <label>Task Name</label>
           <input
             type="text"
+            placeholder="Task Name"
             value={task.name}
             onChange={(e) => setTask({ ...task, name: e.target.value })}
             required
           />
         </div>
         <div>
-          <label>Difficulty</label>
           <input
             type="number"
+            placeholder="Difficulty"
             value={task.difficulty}
-            min="1"
-            max="3"
-            onChange={(e) => setTask({ ...task, difficulty: parseInt(e.target.value) })}
+            onChange={(e) => setTask({ ...task, difficulty: Number(e.target.value) })}
             required
           />
         </div>
         <div>
-          <label>Points</label>
           <input
             type="number"
+            placeholder="Points"
             value={task.points}
-            onChange={(e) => setTask({ ...task, points: parseInt(e.target.value) })}
+            onChange={(e) => setTask({ ...task, points: Number(e.target.value) })}
             required
           />
         </div>
@@ -66,5 +72,3 @@ export const AddTaskForm = ({handleSumbit}: AddTaskFormProps) => {
     </div>
   );
 };
-
-

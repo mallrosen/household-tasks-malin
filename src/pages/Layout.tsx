@@ -29,6 +29,8 @@ export const Layout = () => {
 
       setHouseholdId(householdData.household_id);
       setMemberId(householdData.member_id);
+      console.log('Household ID:', householdData.household_id);
+      console.log('Member ID:', householdData.member_id);
     };
 
     fetchMemberInfo();
