@@ -1,3 +1,4 @@
+import { Session } from '@supabase/supabase-js';
 import { IHousehold } from '../models/IHousehold';
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
@@ -31,7 +32,9 @@ export const fetchTasks = async (householdId: string) => {
   }
 };
 
-export async function fetchHousehold(userId: string): Promise<IHousehold[] | null> {
+
+
+export const fetchHousehold = async (userId: string): Promise<IHousehold[] | null> => {
   const { data: memberData, error: memberError } = await supabase
     .from('Members')
     .select('household_id')
@@ -42,6 +45,7 @@ export async function fetchHousehold(userId: string): Promise<IHousehold[] | nul
     console.error('Error fetching household ID from Members:', memberError.message);
     return null;
   }
+  
 
   if (memberData && memberData.length > 0) {
     const householdId = memberData[0].household_id;
@@ -61,22 +65,49 @@ export async function fetchHousehold(userId: string): Promise<IHousehold[] | nul
 
   console.error('No household found for the given user ID');
   return null;
-}
+};
 
-export async function fetchMembers(householdId: string): Promise<IMembers[]> {
+export const fetchHouseholdName = async (householdId: string): Promise<IHousehold[]> => {
+  const { data, error } = await supabase
+    .from('Household')
+    .select('household_id, name, created_at, created_by, is_active')
+    .eq('household_id', householdId);
+
+  if (error) {
+    console.error('Error fetching household name:', error.message);
+    return [];
+  }
+
+  return data; 
+};
+
+
+export const fetchMembers = async (householdId: string): Promise<IMembers[]> =>{
   const { data, error } = await supabase
     .from('Members')
-    .select('member_id, user_id, household_id')
+    .select('member_id, user_id, household_id, Users(username, total_points)') 
     .eq('household_id', householdId);
 
   if (error) {
     console.error('Error fetching members:', error.message);
     return [];
   }
-  return data;
+
+
+  return data.map(member => ({
+    member_id: member.member_id,
+    user_id: member.user_id,
+    household_id: member.household_id,
+    username: member.Users?.[0]?.username || 'Unknown User', 
+    total_points: member.Users?.[0]?.total_points || 0, 
+
+  }));
 }
 
-export async function getSession() {
+
+
+
+export const getSession = async():Promise<Session | null> => {
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {
@@ -87,4 +118,8 @@ export async function getSession() {
   return data.session;
 }
 
+
+// function setError(arg0: string) {
+//   throw new Error('Function not implemented.');
+// }
 

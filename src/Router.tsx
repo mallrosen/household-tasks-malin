@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Overview } from "./pages/Overview";
 import { Layout } from "./pages/Layout";
 import { NotFound } from "./pages/NotFound";
 import { Tasks } from "./pages/Tasks";
-import { LogInForm } from "./components/LogInForm"; // Startsida för inloggning 
-import { SignUpForm } from "./components/SignUpForm"; // Registreringssida
-import { Dashboard } from "./pages/Dashboard"
+import { LogInForm } from "./pages/LogInForm"; 
+import { SignUpForm } from "./pages/SignUpForm"; 
+import { Dashboard } from "./pages/Dashboard";
 import { HouseholdPage } from "./pages/HouseholdPage";
+
 
 export const router = createBrowserRouter([
   {
@@ -18,7 +18,7 @@ export const router = createBrowserRouter([
         element: <LogInForm />,
       },
       {
-        path: '/signup', 
+        path: '/signup',
         element: <SignUpForm />,
       },
       {
@@ -26,19 +26,13 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: '/overview', 
-        element: (
-          <Overview householdId={''} userId={''} householdName={''}/>
-        ),
-      },
-      {
-        path: '/tasks/:householdId/:memberId',
+        path: '/tasks/:householdId/:memberId', 
         element: <Tasks />,
       },
       {
-        path: '/household/:householdId',
-        element: <HouseholdPage />
-      }
+        path: '/household/:householdId/', 
+        element: <HouseholdPage />,
+      },
     ],
     errorElement: <NotFound />,
   },

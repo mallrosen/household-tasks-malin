@@ -1,73 +1,59 @@
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
-interface Task {
-  task_id: string;
-  name: string;
-  difficulty: number;
-  points: number;
-  status: boolean; 
-  member_id: string;
-}
+export const AddTaskForm = ({ handleSubmit }: { handleSubmit: Function }) => {
+  const [taskName, setTaskName] = useState('');
+  const [difficulty, setDifficulty] = useState('easy'); 
+  const [points, setPoints] = useState(10); 
+  const [error, setError] = useState('');
 
-interface AddTaskFormProps {
-  handleSubmit: (task: Task) => void;
-}
+  const handleDifficultyChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const difficulty = e.target.value;
 
-export const AddTaskForm = ({ handleSubmit }: AddTaskFormProps) => {
-  const [task, setTask] = useState({
-    task_id: '',
-    name: '',
-    difficulty: 1,
-    points: 10,
-    status: false,
-    member_id: '',
-  });
+    setDifficulty(difficulty);
 
-  const onSubmit = (e: FormEvent) => {
+    if (difficulty === 'easy') {
+      setPoints(10);
+    } else if (difficulty === 'medium') {
+      setPoints(20);
+    } else if (difficulty === 'hard') {
+      setPoints(30);
+    }
+  };
+
+  const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
-    handleSubmit(task);
-    setTask({
-      task_id: '',
-      name: '',
-      difficulty: 1,
-      points: 10,
-      status: false,
-      member_id: '',
-    });
+    
+    if (!taskName) {
+      setError('Task name is required');
+      return;
+    }
+
+    handleSubmit({ name: taskName, difficulty: difficulty, points: points });
+    setTaskName('');
+    setError('');
   };
 
   return (
-    <div>
-      <h3>Add Task</h3>
-      <form onSubmit={onSubmit}>
-        <div>
-          <input
-            type="text"
-            placeholder="Task Name"
-            value={task.name}
-            onChange={(e) => setTask({ ...task, name: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="number"
-            placeholder="Difficulty"
-            value={task.difficulty}
-            onChange={(e) => setTask({ ...task, difficulty: Number(e.target.value) })}
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="number"
-            placeholder="Points"
-            value={task.points}
-            onChange={(e) => setTask({ ...task, points: Number(e.target.value) })}
-            required
-          />
-        </div>
+    <div className="add-task-form">
+      <h3>Add New Task</h3>
+      <form onSubmit={handleFormSubmit}>
+        <input
+          type="text"
+          placeholder="Task Name"
+          value={taskName}
+          onChange={(e) => setTaskName(e.target.value)}
+          required
+        />
+        
+        <select value={difficulty} onChange={handleDifficultyChange}>
+          <option value="easy">Easy (10 points)</option>
+          <option value="medium">Medium (20 points)</option>
+          <option value="hard">Hard (30 points)</option>
+        </select>
+        
         <button type="submit">Add Task</button>
+        
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchTasks, fetchHousehold, fetchMembers, fetchUsers } from '../services/superbaseService';
+import { fetchHousehold, fetchMembers, fetchTasks, fetchUsers } from '../services/superbaseService';
 import { ITask } from '../models/ITask';
 import { IHousehold } from '../models/IHousehold';
 import { IMembers } from '../models/IMembers';
@@ -33,7 +33,7 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
         const tasksData = await fetchTasks(householdId);
         setTasks(tasksData || []);
 
-        const user = usersData.find((user) => user.user_id === userId);
+        const user = usersData.find((user: { user_id: string; }) => user.user_id === userId);
         if (user) {
           setUserPoints(user.total_points); 
         }
@@ -55,13 +55,11 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
 
   return (
     <div>
-      <h1>Overview</h1>
-
       <h2>Household</h2>
-      <p>{household ? `${household.name}` : 'No household found'}</p>
+      <h3>{household ? `${household.name}` : 'No household found'}</h3>
 
       <h2>Your Points</h2>
-      <p>{userPoints !== null ? `Your points: ${userPoints}` : 'Points not found'}</p>
+      <h3>{userPoints !== null ? `Your points: ${userPoints}` : 'Points not found'}</h3>
 
       <h2>Household members</h2>
       <ul>

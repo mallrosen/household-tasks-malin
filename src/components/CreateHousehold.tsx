@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 interface CreateHouseholdFormProps {
   onCreate: (householdName: string) => void;
@@ -8,7 +8,7 @@ export const CreateHouseholdForm = ({ onCreate }: CreateHouseholdFormProps) => {
   const [householdName, setHouseholdName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
 

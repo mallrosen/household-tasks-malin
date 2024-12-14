@@ -3,4 +3,7 @@ export interface IMembers {
     user_id: string;  
     household_id: number;  
     role?: string | null;
+    username?: string;
+    total_points?: number;
+    
   }

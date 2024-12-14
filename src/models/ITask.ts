@@ -2,7 +2,7 @@ export interface ITask {
   task_id: string;
   created_at: string;
   name: string;
-  difficulty: number;
+  difficulty: string;
   points: number;
   status: boolean;
   member_id: string;

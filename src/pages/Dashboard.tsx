@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateHouseholdForm } from '../components/CreateHousehold';
-import { Overview } from './Overview';
+import { Overview } from '../components/Overview';
 import { getSession, fetchHousehold } from '../services/superbaseService';
 import { supabase } from '../services/supabaseClient';
 import { JoinHouseholdForm } from '../components/JoinHousehold';
+import { useAuth } from '../context/AuthContext';
 
 export const Dashboard = () => {
+  const {
+    session,
+    loading,
+  } = useAuth();
+
   const [householdName, setHouseholdName] = useState('');
-  const [householdId, setHouseholdId] = useState<string | null>('');
+  const [householdId, setHouseholdId] = useState<string | null>(null);
   const [householdCreated, setHouseholdCreated] = useState(false);
-  const [memberId, setMemberId] = useState<string | null>('');
-  const [userId, setUserId] = useState<string | null>('');
+  const [memberId, setMemberId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -31,44 +37,35 @@ export const Dashboard = () => {
         const householdData = await fetchHousehold(currentUserId);
 
         if (householdData && householdData.length > 0) {
-          setHouseholdId(householdData[0].household_id);
+          const fetchedHouseholdId = householdData[0].household_id;
+          setHouseholdId(fetchedHouseholdId);
           setHouseholdName(householdData[0].name);
           setHouseholdCreated(true);
 
-          const { data, error } = await supabase
+          const { data: memberData, error: memberError } = await supabase
             .from('Members')
             .select('member_id')
             .eq('user_id', currentUserId)
-            .eq('household_id', householdData[0].household_id)
+            .eq('household_id', fetchedHouseholdId)
             .single();
 
-          if (error || !data) {
-            setError('Error fetching member info: ' + (error?.message || 'Unknown error'));
+          if (memberError || !memberData) {
+            setError('Error fetching member info: ' + (memberError?.message));
           } else {
-            setMemberId(data.member_id);
+            setMemberId(memberData.member_id);
           }
         } else {
-          setHouseholdId('');
           setHouseholdCreated(false);
+          setHouseholdId(null);
           setHouseholdName('');
         }
       } catch (error) {
-        setError('Error initializing dashboard: ' + error);
+        setError('Error initializing dashboard: ' + (error as Error).message);
       }
     };
-    const navigateToTasks = () => {
-      if (householdId && memberId) {
-        navigate(`/tasks/${householdId}/${memberId}`);
-      } else {
-        setError('Household ID or Member ID is missing.');
-      }
-      navigateToTasks();
-    };
-
+  
     initializeDashboard();
-  }, []);
-
-
+  }, [session, loading, ]); 
 
   const createHousehold = async (name: string) => {
     try {
@@ -76,38 +73,33 @@ export const Dashboard = () => {
         setError('You must be logged in to create a household.');
         return;
       }
-  
+
       const { data: householdData, error } = await supabase
         .from('Household')
         .insert([{ name, created_by: userId }])
         .select();
-  
-      console.log('Household creation response:', householdData); 
-      if (error || !householdData) {
+
+      if (error || !householdData || householdData.length === 0) {
         setError('Error creating household: ' + error?.message);
         return;
       }
-  
 
-  
+      const householdId = householdData[0].household_id;
+      setHouseholdId(householdId);
+      setHouseholdName(name);
+
       const { error: memberError } = await supabase
         .from('Members')
         .insert([{ user_id: userId, household_id: householdId, role: 'admin' }]);
-  
       if (memberError) {
         setError('Error adding user to household: ' + memberError.message);
         return;
       }
-  
-      setHouseholdId(householdId); 
-      setHouseholdName(name); 
-      setHouseholdCreated(true); 
-      navigate(`/household/${householdId}`); 
+      setHouseholdCreated(true);
     } catch (error) {
-      setError('Error creating household: ' + error);
+      setError('Error creating household: ' + (error as Error).message);
     }
   };
-  
 
   const joinHousehold = async (householdName: string) => {
     try {
@@ -116,13 +108,12 @@ export const Dashboard = () => {
         return;
       }
   
-
       const { data: householdData, error: fetchError } = await supabase
         .from('Household')
         .select('household_id')
         .eq('name', householdName)
         .limit(1)
-        .single(); 
+        .single();
   
       if (fetchError || !householdData) {
         setError('Household not found.');
@@ -134,17 +125,19 @@ export const Dashboard = () => {
       const { error: memberError } = await supabase
         .from('Members')
         .insert([{ user_id: userId, household_id: householdId, role: 'member' }]);
-  
+
       if (memberError) {
         setError('Error joining household: ' + memberError.message);
         return;
       }
   
-      navigate(`/household/${householdId}`);
+      setHouseholdId(householdId);
+      setHouseholdCreated(true);
+
     } catch (error) {
-      setError('Error joining household: ' + error);
+      setError('Error joining household: ' + (error as Error).message);
     }
-  };  
+  };
 
   const navigateToTasks = () => {
     if (householdId && memberId) {
@@ -152,7 +145,7 @@ export const Dashboard = () => {
     } else {
       setError('Household ID or Member ID is missing.');
     }
-  }
+  };
 
   return (
     <div>

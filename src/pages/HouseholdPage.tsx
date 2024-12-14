@@ -1,103 +1,99 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchHousehold, fetchMembers, getSession, fetchUsers } from '../services/superbaseService';
-import { IHousehold } from '../models/IHousehold';
+import { fetchHouseholdName, fetchMembers, fetchUsers, getSession } from '../services/superbaseService';  
+import { ChartComponent } from '../components/ChartComponent'; 
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
 
+
+import '../styles/HouseholdPage.scss';
+import { useAuth } from '../context/AuthContext';
+
 export const HouseholdPage = () => {
-  const { householdId, memberId } = useParams<{ householdId: string, memberId: string}>(); 
-  const [household, setHousehold] = useState<IHousehold | null>(null);
+  const { householdId } = useParams<{ householdId: string }>();
   const [members, setMembers] = useState<IMembers[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [userIsMember, setUserIsMember] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<any>(null);
+  const [householdName, setHouseholdName] = useState<string | null>(null);
+  const { session } = useAuth();
 
   useEffect(() => {
-    console.log('Household ID:', householdId);
-    console.log('Member ID:', memberId);
-
-    const fetchHouseholdData = async () => {
-      if (!householdId) {
-        setError('Household ID is missing');
-        return;
-      }
-  
+    const fetchHouseholdDetails = async (householdId: string) => {
       try {
-        const session = await getSession();
-        const userId = session?.user?.id;
+        const householdNameData = await fetchHouseholdName(householdId);
+        setHouseholdName(householdNameData && householdNameData[0]?.name || null);
 
-        if (!userId) {
-          setError('You must be logged in to view household data.');
-          return;
-        }
+        const memberData = await fetchMembers(householdId); 
+        setMembers(memberData);
 
-        const householdData = await fetchHousehold(userId);
+        const userData = await fetchUsers(); 
+        setUsers(userData);
 
-        if (!householdData || householdData.length === 0) {
-          setError('No household found or you are not a member of any household.');
-          return;
-          
-        }
-   
-
-        const matchedHousehold = householdData.find(h => h.household_id === householdId);
-
-        if (!matchedHousehold) {
-          setError('Household does not exist or you are not a member.');
-          return;
-        }
-
-        setHousehold(matchedHousehold);
-
-        const membersData = await fetchMembers(householdId);
-
-        if (!membersData || membersData.length === 0) {
-          setError('No members found for this household.');
-          return;
-        }
-
-        setMembers(membersData);
-
-        if (membersData.some(member => member.user_id === userId)) {
-          setUserIsMember(true);
-        } else {
-          setUserIsMember(false);
-        }
-
-        const usersData = await fetchUsers();
-        setUsers(usersData);
-      } catch (error) {
-        setError('Error fetching data: ' + (error as Error).message);
+        const chartData = generateChartData(memberData, userData);
+        setChartData(chartData);
+      } catch (err) {
+        setError('Error fetching household data.');
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchHouseholdData();
-  }, [householdId]);
+    if (session &&  householdId) {
+      fetchHouseholdDetails(householdId);
+    }
+  }, [session, householdId]);
 
-  const getUsername = (userId: string): string => {
-    const user = users.find(user => user.user_id === userId);
-    return user ? user.username : 'Unknown user';
+
+  const generateChartData = (members: IMembers[], users: IUser[]) => {
+    const labels: string[] = [];
+    const data: number[] = [];
+
+    members.forEach(member => {
+      const user = users.find(u => u.user_id === member.user_id);
+      if (user) {
+        labels.push(user.username || 'Unknown');
+        data.push(user.total_points || 0);  
+      }
+    });
+    
+
+    return {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF5733', '#4CAF50'],
+        },
+      ],
+    };
   };
+
+  if (loading) {
+    return <div>Loading household data...</div>;
+  }
 
   if (error) {
     return <div>{error}</div>;
   }
 
-  if (!userIsMember) {
-    return <div>You are not a member of this household.</div>;
-  }
-
   return (
-    <div>
-      <h1>Household Information</h1>
-      <h2>{household ? `Household: ${household.name}` : 'No household found'}</h2>
-      <h3>Members:</h3>
-      <ul>
-        {members.map(member => (
-          <li key={member.member_id}>{getUsername(member.user_id)}</li>
+    <div className="household-page">
+      <h1>{householdName || 'Loading household name...'}</h1> 
+      <h3>Members</h3>
+      <ul className="members-list">
+        {members.map((member) => (
+          <li key={member.member_id} className="member-item">
+            {users.find(user => user.user_id === member.user_id)?.username || 'Unknown User'}
+          </li>
         ))}
       </ul>
+      <h3>Points Distribution</h3>
+      {chartData && <ChartComponent data={chartData} />}
     </div>
   );
 };
+
+
