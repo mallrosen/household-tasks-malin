@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import "../styles/main.scss";
 
 export const LogInForm = () => {
   const [email, setEmail] = useState('');

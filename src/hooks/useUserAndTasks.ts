@@ -46,7 +46,6 @@ export const useUserAndTasks = () => {
         setError('Error fetching tasks: ' + (error as Error).message);
       }
     };
-
     fetchUserIdAndMemberId();
   }, []);
 

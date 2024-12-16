@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ITask } from '../models/ITask';
+import "../styles/main.scss";
 
 interface TaskListProps {
   tasks: ITask[];

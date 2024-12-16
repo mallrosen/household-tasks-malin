@@ -1,0 +1,47 @@
+@use '../utils/mixins' as mixins;  
+@use '../utils/variables' as vars;
+@use '../base/typography' as typography;
+
+nav {
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 40px 0;
+  margin-bottom: 100px;
+  background: linear-gradient(to right, vars.$primary-color, vars.$secondary-color);
+}
+
+ul {
+  display: flex;
+  list-style: none;
+}
+
+li {
+  padding: 10px 20px; 
+}
+
+a {
+  display: flex;
+  justify-content: space-evenly;
+  text-decoration: none;
+  color: vars.$secondary-color-dark; 
+  font-size: typography.$font-size-xl;
+  transition: color 0.3s ease;
+  gap: 30px;
+}
+
+a:hover {
+  color: vars.$accent-color; 
+}
+
+main {
+  margin-top: 80px; 
+  padding: 20px;
+  background-color: vars.$background-color; 
+}
+
+
+  

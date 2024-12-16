@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useUserAndTasks } from '../hooks/useUserAndTasks';
-import { useTaskHandlers } from '../hooks/useTaskHandlers'; // Ny hook för hantering av uppgifter
+import { useTaskHandlers } from '../hooks/useTaskHandlers'; 
 import { AddTaskForm } from '../components/AddTaskForm';
-import { fetchTasks } from '../services/superbaseService';
+import { fetchTasksByHousehold } from '../services/superbaseService'; 
 import { supabase } from '../services/supabaseClient';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import '../styles/Tasks.scss'
+import "../styles/main.scss";
 
 export const Tasks = () => {
   const {
@@ -19,8 +19,10 @@ export const Tasks = () => {
     setError,
   } = useUserAndTasks();
 
+  const [householdId, setHouseholdId] = useState<string | null>(null);
+
   const { toggleTaskCompletion, removeTask } = useTaskHandlers(
-    memberId,
+    householdId,
     taskList,
     setTaskList,
     userPoints,
@@ -30,10 +32,30 @@ export const Tasks = () => {
   );
 
   useEffect(() => {
-    const fetchTasksForMember = async () => {
+    const fetchHouseholdId = async () => {
       if (!memberId) return;
 
-      const tasks = await fetchTasks(memberId);
+      try {
+        const { data, error } = await supabase
+          .from('Members')
+          .select('household_id')
+          .eq('member_id', memberId)
+          .single();
+
+        if (error || !data) {
+          setError('Error fetching household ID');
+          return;
+        }
+        setHouseholdId(data.household_id);
+      } catch (error) {
+        setError('Error fetching household ID: ' + (error as Error).message);
+      }
+    };
+
+    const fetchTasksForHousehold = async () => {
+      if (!householdId) return;
+
+      const tasks = await fetchTasksByHousehold(householdId);
       if (tasks) {
         setTaskList(tasks);
       } else {
@@ -41,8 +63,9 @@ export const Tasks = () => {
       }
     };
 
-    fetchTasksForMember();
-  }, [memberId, setTaskList, setError]);
+    fetchTasksForHousehold();
+    fetchHouseholdId();
+  }, [setTaskList, setError, [memberId]]);
 
   const handleSubmit = async (task: { name: string; difficulty: number; points: number }) => {
     if (!memberId) {
@@ -98,7 +121,7 @@ export const Tasks = () => {
         ))}
       </div>
       <div className='addTaskForm'>
-      <AddTaskForm  handleSubmit={handleSubmit} />
+        <AddTaskForm handleSubmit={handleSubmit} />
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

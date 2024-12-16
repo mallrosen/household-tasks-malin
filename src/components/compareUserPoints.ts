@@ -1,4 +1,5 @@
 import { fetchUsers, fetchTasks, fetchMembers } from '../services/superbaseService';
+import "../styles/main.scss";
 
 export const compareUserPoints = async (householdId: string): Promise<
   { user_id: string; username: string; total_points: number }[]

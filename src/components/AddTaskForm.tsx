@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
+import "../styles/main.scss";
 
 export const AddTaskForm = ({ handleSubmit }: { handleSubmit: Function }) => {
   const [taskName, setTaskName] = useState('');

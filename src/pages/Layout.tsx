@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { getSession } from '../services/superbaseService';
 import { supabase } from '../services/supabaseClient';
-import '../styles/Layout.scss';
+import "../styles/main.scss";
 import { useAuth } from '../context/AuthContext';
 
 interface LayoutProps {

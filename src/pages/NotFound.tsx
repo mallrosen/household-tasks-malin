@@ -1,3 +1,5 @@
+import "../styles/main.scss";
+
 export const NotFound = () => {
     return (
         <div>

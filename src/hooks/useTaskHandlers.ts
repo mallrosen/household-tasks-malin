@@ -4,7 +4,7 @@ import { ITask } from '../models/ITask';
 
 
 export const useTaskHandlers = (
-memberId: string | null, taskList: ITask[], setTaskList: (tasks: ITask[] | ((prevTasks: ITask[]) => ITask[])) => void, userPoints: number, setUserPoints: (points: number) => void, setError: (error: string | null) => void, error: string | null) => {
+householdId: string | null, taskList: ITask[], setTaskList: (tasks: ITask[] | ((prevTasks: ITask[]) => ITask[])) => void, userPoints: number, setUserPoints: (points: number) => void, setError: (error: string | null) => void, error: string | null) => {
   const toggleTaskCompletion = useCallback(
     async (taskId: string) => {
       const task = taskList.find(t => t.task_id === taskId);
@@ -82,7 +82,7 @@ memberId: string | null, taskList: ITask[], setTaskList: (tasks: ITask[] | ((pre
         setError('Error deleting task: ' + (error as Error).message);
       }
     },
-    [memberId, setTaskList, setError]
+    [householdId, setTaskList, setError]
   );
 
   return { toggleTaskCompletion, removeTask };

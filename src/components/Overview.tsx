@@ -4,6 +4,7 @@ import { ITask } from '../models/ITask';
 import { IHousehold } from '../models/IHousehold';
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
+import "../styles/main.scss";
 
 interface OverviewProps {
   householdId: string;

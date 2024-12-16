@@ -1,0 +1,12 @@
+@use '../utils/variables' as vars;
+
+.button {
+  background-color: vars.$primary-color;
+  // border: 1px solid vars.$primary-color-dark;
+  color: vars.$secondary-color-light;
+
+  &:hover {
+    background-color: vars.$primary-color-dark;
+    color: vars.$secondary-color;
+  }
+}

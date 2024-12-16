@@ -1,0 +1,33 @@
+@use '../utils/variables' as vars;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+//Font Family
+$fontPrimary: 'Poppins', sans-serif;
+
+// Font Sizes
+$font-size-base: 1rem; // 16px
+$font-size-sm: 0.875rem; // 14px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.5rem; // 24px
+$font-size-xxl: 2rem; // 32px
+
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: vars.$primary-color-light;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: vars.$primary-color-dark; 
+  }
+ 
+p {
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 400;
+    color: vars.$primary-color-dark; 
+    }

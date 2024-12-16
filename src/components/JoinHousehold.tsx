@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import "../styles/main.scss";
 
 interface JoinHouseholdFormProps {
   onJoin: (householdName: string) => void;

@@ -6,6 +6,7 @@ import { getSession, fetchHousehold } from '../services/superbaseService';
 import { supabase } from '../services/supabaseClient';
 import { JoinHouseholdForm } from '../components/JoinHousehold';
 import { useAuth } from '../context/AuthContext';
+import "../styles/main.scss";
 
 export const Dashboard = () => {
   const {

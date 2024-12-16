@@ -4,9 +4,7 @@ import { fetchHouseholdName, fetchMembers, fetchUsers, getSession } from '../ser
 import { ChartComponent } from '../components/ChartComponent'; 
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
-
-
-import '../styles/HouseholdPage.scss';
+import "../styles/main.scss";
 import { useAuth } from '../context/AuthContext';
 
 export const HouseholdPage = () => {

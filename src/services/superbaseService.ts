@@ -67,6 +67,24 @@ export const fetchHousehold = async (userId: string): Promise<IHousehold[] | nul
   return null;
 };
 
+export const fetchTasksByHousehold = async (householdId: string) => {
+  const { data, error } = await supabase
+    .from('Tasks')
+    .select(`
+      *,
+      Members!inner(household_id)
+    `)
+    .eq('Members.household_id', householdId);
+
+  if (error) {
+    console.error('Error fetching tasks for household:', error.message);
+    return null;
+  }
+
+  return data;
+};
+
+
 export const fetchHouseholdName = async (householdId: string): Promise<IHousehold[]> => {
   const { data, error } = await supabase
     .from('Household')
