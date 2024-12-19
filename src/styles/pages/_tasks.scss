@@ -1,61 +1,49 @@
+@use '../utils/variables' as vars;
+
 .addTaskForm {
   margin-top: 50px;
   text-align: center;
   display: flex;
   gap: 20px;
   justify-content: center;
-
 }
-
 
 .tasks-container {
   display: flex;
-  flex-wrap: wrap; 
-  gap: 20px;  
-  justify-content: center;
-  align-items: center;  
+  flex-direction: column;
+  align-items: center;   
+  gap: 10px;            
   padding: 20px;
-  margin-top: 20px;
+  gap: 30px;
 }
 
 .task-item {
   border-radius: 8px;
   padding: 15px;
-  width: 30vw;  
+  width: 80vw;        
+  margin: 0 auto;       
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center; 
   transition: transform 0.2s ease;
-}
 
-.task-item:hover {
-  transform: translateY(-5px);  
-}
 
-button {
-  background-color: #4e4c4c; 
-  color: rgb(39, 174, 184);
-  border: none;
-  padding: 5px 9px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 10px;
-}
-
-button:hover {
-  background-color: #e03e1b; 
+  &:hover {
+    transform: translateY(-5px);  
+  }
 }
 
 .delete-icon {
   font-size: 12px;  
   cursor: pointer;
   transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.2);  
+  }
 }
 
-.delete-icon:hover {
-  transform: scale(1.2);  
-}
-
-.rubrik{
+.rubrik {
+  margin-top: 100px;
   font-size: 40px;
   font-weight: bold;
   color: #4e4c4c; 
@@ -63,16 +51,20 @@ button:hover {
   justify-content: center;
   align-items: center;
 }
+ 
+button {
+  padding: 5px 9px;
+}
 
-.addTaskForm{
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center; 
-  transition: transform 0.2s ease;
-  width: 40%;
+@media (min-width: 768px) {
+  .tasks-container {
+    flex-direction: row;
+    flex-wrap: wrap;   
+    justify-content: center;
+    gap: 10px;           
+  }
+
+  .task-item {
+    width: 40vw;        
+  }
 }

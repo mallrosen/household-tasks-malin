@@ -1,26 +1,50 @@
 @use '../utils/variables' as vars;
+@use '../base/typography' as typ; 
 
 .add-task-form {
     border-radius: 8px;
     padding: 20px;
     width: 50%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
     text-align: center;
     display: flex;
     flex-direction: column; 
     align-items: center;
     justify-content: center;
-}
 
-.add-task-form input { 
-    width: 70%;  
+    & input { 
+        width: 70%;  
+        padding: 10px;
+        background-color: vars.$accent-color;
+        margin-bottom: 10px; 
+        text-align: center;
+        font-size: large;
+        color: vars.$primary-color-light;
+    }
+
+    & select {
+        width: 50%;  
+        padding: 5px;
+        background-color: vars.$accent-color;
+        margin-bottom: 10px; 
+        text-align: center;
+        font-size: 16px;
+        color: vars.$primary-color-light;
+    }
+
+
+button {
+    background-color: vars.$primary-color;
+    color: vars.$primary-color-light;
     padding: 10px;
-    margin-bottom: 10px; 
-    text-align: center;
-    font-size: large;
+    border: 2px solid;
+
+    &:hover {
+
+        background-color: vars.$primary-color-dark; 
+        color: vars.$primary-color-light;
+
+    }
+
 }
-
-
-
-
+}

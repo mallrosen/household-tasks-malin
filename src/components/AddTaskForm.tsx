@@ -40,7 +40,7 @@ export const AddTaskForm = ({ handleSubmit }: { handleSubmit: Function }) => {
       <form onSubmit={handleFormSubmit}>
         <input
           type="text"
-          placeholder="Task Name"
+          placeholder="Add Task"
           value={taskName}
           onChange={(e) => setTaskName(e.target.value)}
           required
@@ -52,7 +52,7 @@ export const AddTaskForm = ({ handleSubmit }: { handleSubmit: Function }) => {
           <option value="hard">Hard (30 points)</option>
         </select>
         
-        <button type="submit">Add Task</button>
+        <button type="submit" className='addTask'>Add Task</button>
         
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>

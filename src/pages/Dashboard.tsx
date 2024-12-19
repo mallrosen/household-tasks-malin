@@ -149,7 +149,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div>
+    <div className='dashboardDiv'>
       <h2>Welcome to the Dashboard</h2>
 
       {!householdCreated && <CreateHouseholdForm onCreate={createHousehold} />}

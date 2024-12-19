@@ -65,9 +65,9 @@ export const Layout = ({ children }: LayoutProps) => {
     }
   };
 
-  // if (loading) {
-  //   return <div>Laddar...</div>;
-  // }
+  if (loading) {
+    return <div>Laddar...</div>;
+  }
 
   return (
     <>

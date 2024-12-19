@@ -9,7 +9,6 @@ nav {
   left: 0;
   display: flex;
   justify-content: space-evenly;
-  padding: 40px 0;
   margin-bottom: 100px;
   background: linear-gradient(to right, vars.$primary-color, vars.$secondary-color);
 }
@@ -17,31 +16,43 @@ nav {
 ul {
   display: flex;
   list-style: none;
+  padding-left: 0;
+  gap: 10px;
 }
 
 li {
-  padding: 10px 20px; 
+  padding: 20px 10px; 
 }
 
 a {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   text-decoration: none;
   color: vars.$secondary-color-dark; 
-  font-size: typography.$font-size-xl;
+  font-size: typography.$font-size;
   transition: color 0.3s ease;
-  gap: 30px;
-}
 
-a:hover {
-  color: vars.$accent-color; 
-}
-
-main {
-  margin-top: 80px; 
-  padding: 20px;
-  background-color: vars.$background-color; 
+  &:hover {
+    color: vars.$primary-color-light; 
+  }
 }
 
 
-  
+
+@media (min-width: 768px) {
+  nav {
+    padding: 5px;
+  }
+   
+  ul {
+    gap: 100px;
+  }
+
+  li {
+    padding: 3px; 
+  }
+
+  a {
+    font-size: typography.$font-size-xl; 
+  }
+}

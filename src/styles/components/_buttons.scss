@@ -1,12 +1,17 @@
 @use '../utils/variables' as vars;
+@use '../base/typography' as typ;
 
-.button {
-  background-color: vars.$primary-color;
-  // border: 1px solid vars.$primary-color-dark;
-  color: vars.$secondary-color-light;
+button {
+  background-color: vars.$accent-color;
+  color: vars.$primary-color-light;
+  padding: 100px;
+  font-size: typ.$font-size;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px;
 
   &:hover {
-    background-color: vars.$primary-color-dark;
-    color: vars.$secondary-color;
+    background-color: vars.$accent-color-dark; 
+    color: vars.$primary-color-light;
   }
 }
