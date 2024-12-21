@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUserAndTasks } from '../hooks/useUserAndTasks';
 import { useTaskHandlers } from '../hooks/useTaskHandlers'; 
 import { AddTaskForm } from '../components/AddTaskForm';
-import { fetchTasksByHousehold } from '../services/superbaseService'; 
+import { fetchTasksForHousehold } from '../services/superbaseService'; 
 import { supabase } from '../services/supabaseClient';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -22,50 +22,47 @@ export const Tasks = () => {
   const [householdId, setHouseholdId] = useState<string | null>(null);
 
   const { toggleTaskCompletion, removeTask } = useTaskHandlers(
-    householdId,
+    memberId,
     taskList,
     setTaskList,
     userPoints,
     setUserPoints,
     setError,
     error,
+    householdId,
   );
 
   useEffect(() => {
-    const fetchHouseholdId = async () => {
-      if (!memberId) return;
-
+    const fetchHouseholdAndTasks = async () => {
+      if (!memberId) return; 
+  
       try {
-        const { data, error } = await supabase
+    
+        const { data: memberData, error: memberError } = await supabase
           .from('Members')
           .select('household_id')
           .eq('member_id', memberId)
           .single();
-
-        if (error || !data) {
+  
+        if (memberError || !memberData) {
           setError('Error fetching household ID');
           return;
         }
-        setHouseholdId(data.household_id);
+        setHouseholdId(memberData.household_id);
+  
+        const tasks = await fetchTasksForHousehold(memberData.household_id);
+        if (tasks.length > 0) {
+          setTaskList(tasks);
+        } else {
+          setError('No tasks found for household');
+        }
       } catch (error) {
-        setError('Error fetching household ID: ' + (error as Error).message);
+        setError('Error fetching data: ' + (error as Error).message);
       }
     };
-
-    const fetchTasksForHousehold = async () => {
-      if (!householdId) return;
-
-      const tasks = await fetchTasksByHousehold(householdId);
-      if (tasks) {
-        setTaskList(tasks);
-      } else {
-        setError('Error fetching tasks');
-      }
-    };
-
-    fetchTasksForHousehold();
-    fetchHouseholdId();
-  }, [setTaskList, setError, [memberId]]);
+  
+    fetchHouseholdAndTasks();
+  }, [memberId, setTaskList, setError]);
 
   const handleSubmit = async (task: { name: string; difficulty: number; points: number }) => {
     if (!memberId) {

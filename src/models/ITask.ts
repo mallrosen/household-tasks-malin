@@ -1,4 +1,5 @@
 export interface ITask {
+  isProcessing: boolean;
   task_id: string;
   created_at: string;
   name: string;

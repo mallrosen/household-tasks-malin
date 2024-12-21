@@ -7,30 +7,49 @@ export const useUserAndTasks = () => {
   const [taskList, setTaskList] = useState<ITask[]>([]);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const [householdId, setHouseholdId] = useState<string | null>(null);
+
 
   useEffect(() => {
-    const fetchUserIdAndMemberId = async () => {
-      const session = await supabase.auth.getSession();
-      const userId = session?.data?.session?.user?.id;
+    const fetchUserData = async () => {
+      try {
+        const session = await supabase.auth.getSession();
+        const userId = session?.data?.session?.user?.id;
+        
+        if (!userId) return;
 
-      if (!userId) return;
+        const { data: memberData, error: memberError } = await supabase
+          .from('Members')
+          .select('member_id, household_id, user_id')
+          .eq('user_id', userId)
+          .single();
 
-      const { data: memberData, error: memberError } = await supabase
-        .from('Members')
-        .select('member_id')
-        .eq('user_id', userId)
-        .single();
+        if (memberError || !memberData) {
+          setError('Error fetching member data: ' + memberError?.message);
+          return;
+        }
 
-      if (memberError || !memberData) {
-        setError('Error fetching member ID: ' + memberError?.message);
-        return;
+        setMemberId(memberData.member_id);
+        setHouseholdId(memberData.household_id);
+
+
+        const { data: userData, error: pointsError } = await supabase
+          .from('Users')
+          .select('total_points')
+          .eq('user_id', userId)
+          .single();
+
+        if (!pointsError && userData) {
+          setUserPoints(userData.total_points || 0);
+        }
+      } catch (error) {
+        setError('Error fetching user data: ' + (error as Error).message);
       }
-
-      setMemberId(memberData.member_id);
-      fetchTasksForMember(memberData.member_id);
     };
 
-    const fetchTasksForMember = async (memberId: string) => {
+    const fetchTasks = async () => {
+      if (!memberId) return;
+
       try {
         const { data: tasks, error } = await supabase
           .from('Tasks')
@@ -46,8 +65,18 @@ export const useUserAndTasks = () => {
         setError('Error fetching tasks: ' + (error as Error).message);
       }
     };
-    fetchUserIdAndMemberId();
-  }, []);
+    fetchUserData();
+    fetchTasks();
+  }, [memberId]); 
 
-  return { memberId, taskList, userPoints, error, setTaskList, setError, setUserPoints };
+  return {
+    memberId,
+    householdId,
+    taskList,
+    userPoints,
+    error,
+    setTaskList,
+    setError,
+    setUserPoints,
+  };
 };

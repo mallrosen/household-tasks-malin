@@ -100,6 +100,7 @@ export const Dashboard = () => {
     } catch (error) {
       setError('Error creating household: ' + (error as Error).message);
     }
+    window.location.reload();
   };
 
   const joinHousehold = async (householdName: string) => {
@@ -138,6 +139,7 @@ export const Dashboard = () => {
     } catch (error) {
       setError('Error joining household: ' + (error as Error).message);
     }
+    window.location.reload();
   };
 
   const navigateToTasks = () => {
