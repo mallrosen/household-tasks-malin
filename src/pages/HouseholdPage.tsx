@@ -63,7 +63,9 @@ export const HouseholdPage = () => {
       datasets: [
         {
           data,
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF5733', '#4CAF50'],
+          backgroundColor: ['#F08080', '#194345', '#366223', '#23294F', '#5C7C7E', '#91B383', '#87CEEB', '#BA55D3', '#008080', '#708090', '#FFB256'
+
+          ],
         },
       ],
     };
@@ -82,11 +84,18 @@ export const HouseholdPage = () => {
       <h1>{householdName || 'Loading household name...'}</h1> 
       <h3>Members</h3>
       <ul className="members-list">
-        {members.map((member) => (
-          <li key={member.member_id} className="member-item">
-            {users.find(user => user.user_id === member.user_id)?.username || 'Unknown User'}
+        {members.map((member) => {
+          const user = users.find(user => user.user_id === member.user_id);
+          return (
+            <li key={member.member_id} className="member-item">
+            {user?.username || 'Unknown User'}
+            
+            {user?.total_points != null && (
+              <span className="points"> - {user.total_points} points</span>
+            )}
           </li>
-        ))}
+          );
+        })}
       </ul>
       <h3>Points Distribution</h3>
       {chartData && <ChartComponent data={chartData} />}

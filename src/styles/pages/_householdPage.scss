@@ -7,80 +7,49 @@
 
 
   .members-list {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
     list-style: none;
     padding: 0;
+    gap: 10px; 
 
     .member-item {
       font-size: 1.2rem;
       padding: 10px;
       border: 1px solid vars.$border-color;
       border-radius: 5px;
-      margin-bottom: 10px;
       background: vars.$background-color;
       color: vars.$secondary-color-dark;
       transition: background 0.3s;
+      
+      width: 40%; 
 
       &:hover {
         background: vars.$primary-color-light;
       }
+
+      @media (min-width: 1024px) {
+        width: 30%;
+      }
+
+      @media (min-width: 1400px) {
+        width: 22%; 
+      }
+    }
+  }
+
+  .chart-container {
+    margin-top: 20px;
+
+    @media (max-width: 600px) {
+      width: 100%; 
+      height: 300px; 
+    }
+
+    @media (min-width: 1024px) {
+      width: 80%; 
+      height: 500px; 
     }
   }
 }
-
-
-
-// .household-page {
-//     text-align: center;
-//     padding: 20px;
-  
-//     h1 {
-//       font-size: 2.5rem;
-//       margin-bottom: 20px;
-//     }
-  
-//     h2 {
-//       font-size: 2rem;
-//       margin-bottom: 15px;
-//     }
-  
-//     .members-list {
-//       list-style: none;
-//       padding: 0;
-  
-//       .member-item {
-//         font-size: 1.2rem;
-//         padding: 10px;
-//         border: 1px solid #533382;
-//         border-radius: 5px;
-//         margin-bottom: 10px;
-//         background: #50437d;
-//       }
-//     }
-//   }
-
-// // $primary-color: #2c3e50;
-// // $secondary-color: #f9f9f9;
-// // $hover-color: #ecf0f1;
-// // $text-color: #333;
-// // $box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
-// // .household-page {
-// //   background-color: $secondary-color;
-// //   box-shadow: $box-shadow;
-
-// //   .household-title {
-// //     color: $primary-color;
-// //   }
-
-// //   .user-points-item {
-// //     background-color: $secondary-color;
-
-// //     &:hover {
-// //       background-color: $hover-color;
-// //     }
-
-// //     .user-name {
-// //       color: $text-color;
-// //     }
-// //   }
-// // }

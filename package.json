@@ -23,11 +23,13 @@
     "gauge": "^5.0.2",
     "glob": "^11.0.0",
     "inflight": "^1.0.6",
+    "lucide-react": "^0.469.0",
     "npmlog": "^7.0.1",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
+    "recharts": "^2.15.0",
     "rimraf": "^6.0.1"
   },
   "devDependencies": {
@@ -36,6 +38,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-router-dom": "^5.3.3",
+    "@types/recharts": "^1.8.29",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^5.0.0",

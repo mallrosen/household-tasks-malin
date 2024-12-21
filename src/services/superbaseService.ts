@@ -167,6 +167,49 @@ export const fetchTasks = async (memberId: string) => {
   }
 };
 
+export const fetchTotalPoints = async (householdId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('Members')
+      .select(`
+        member_id,
+        Users(username, total_points)
+      `)
+      .eq('household_id', householdId);
+
+    if (error) {
+      console.error('Error fetching total points:', error.message);
+      return [];
+    }
+
+    return data.map(member => ({
+      username: member.Users?.[0]?.username || 'Unknown User',
+      totalPoints: member.Users?.[0]?.total_points || 0,
+    }));
+  } catch (error) {
+    console.error('Error fetching total points:', error);
+    return [];
+  }
+};
+
+export const fetchWeeklyPoints = async (householdId: string) => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_weekly_points', { household_id: householdId }); // Exempel på en stored procedure
+
+    if (error) {
+      console.error('Error fetching weekly points:', error.message);
+      return [];
+    }
+
+    return data; // Returnerar veckans poäng
+  } catch (error) {
+    console.error('Error fetching weekly points:', error);
+    return [];
+  }
+};
+
+
 export const getSession = async (): Promise<Session | null> => {
   try {
     const { data, error } = await supabase.auth.getSession();

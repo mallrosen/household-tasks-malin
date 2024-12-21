@@ -1,9 +1,9 @@
 @use './utils/variables' as *;
 @use './base/typography' as *;
 @use './layout/layout' as *;
-@use './utils/mixins' as *;
 @use './components/buttons' as *;
 @use './components/addTaskForm' as *;
 @use './pages/tasks.scss' as *;
 @use './pages/householdPage.scss' as *;
+@use './pages/dashboard.scss' as *;
 

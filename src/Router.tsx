@@ -6,6 +6,7 @@ import { LogInForm } from "./pages/LogInForm";
 import { SignUpForm } from "./pages/SignUpForm"; 
 import { Dashboard } from "./pages/Dashboard";
 import { HouseholdPage } from "./pages/HouseholdPage";
+import { ReportPage } from "./pages/ReportPage";
 
 
 export const router = createBrowserRouter([
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
         path: '/household/:householdId/', 
         element: <HouseholdPage />,
       },
+      {
+        path: '/reportpage/:householdId/',
+        element: <ReportPage householdId={''} />,
+      }
     ],
     errorElement: <NotFound />,
   },

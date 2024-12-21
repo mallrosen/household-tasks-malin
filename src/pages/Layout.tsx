@@ -84,6 +84,9 @@ export const Layout = ({ children }: LayoutProps) => {
               <NavLink to={`/household/${householdId}`}>Household</NavLink>
             </li>
             <li>
+              <NavLink to={`/reportpage/${householdId}`}>Reports</NavLink>
+            </li>
+            <li>
               <NavLink to="/" onClick={handleLogout} className="logout-button">
                 Logga ut
               </NavLink>

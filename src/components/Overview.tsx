@@ -55,7 +55,7 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
   );
 
   return (
-    <div>
+    <div className='overview'>
       <h2>Household</h2>
       <h3>{household ? `${household.name}` : 'No household found'}</h3>
 
@@ -63,7 +63,7 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
       <h3>{userPoints !== null ? `Your points: ${userPoints}` : 'Points not found'}</h3>
 
       <h2>Household members</h2>
-      <ul>
+      <ul className="members-list">
         {householdUsers.map(user => (
           <li key={user.user_id}>{user.username}</li>
         ))}
