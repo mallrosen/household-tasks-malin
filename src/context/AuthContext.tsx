@@ -87,6 +87,3 @@ export const useAuth = () => {
   return context;
 };
 
-// function initializeAuth() {
-//   throw new Error('Function not implemented.');
-// }

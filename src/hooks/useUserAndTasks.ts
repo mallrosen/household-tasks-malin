@@ -9,20 +9,22 @@ export const useUserAndTasks = () => {
   const [error, setError] = useState<string | null>(null);
   const [householdId, setHouseholdId] = useState<string | null>(null);
 
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const session = await supabase.auth.getSession();
         const userId = session?.data?.session?.user?.id;
-        
-        if (!userId) return;
 
+        if (!userId) {
+          setError('No user found');
+          return;
+        }
+ 
         const { data: memberData, error: memberError } = await supabase
           .from('Members')
           .select('member_id, household_id, user_id')
           .eq('user_id', userId)
-          .single();
+          .single(); 
 
         if (memberError || !memberData) {
           setError('Error fetching member data: ' + memberError?.message);
@@ -32,23 +34,25 @@ export const useUserAndTasks = () => {
         setMemberId(memberData.member_id);
         setHouseholdId(memberData.household_id);
 
-
         const { data: userData, error: pointsError } = await supabase
           .from('Users')
           .select('total_points')
           .eq('user_id', userId)
           .single();
 
-        if (!pointsError && userData) {
-          setUserPoints(userData.total_points || 0);
+        if (pointsError || !userData) {
+          setError('Error fetching user points: ' + pointsError?.message);
+          return;
         }
+
+        setUserPoints(userData.total_points || 0);
       } catch (error) {
         setError('Error fetching user data: ' + (error as Error).message);
       }
     };
 
     const fetchTasks = async () => {
-      if (!memberId) return;
+      if (!memberId) return; 
 
       try {
         const { data: tasks, error } = await supabase

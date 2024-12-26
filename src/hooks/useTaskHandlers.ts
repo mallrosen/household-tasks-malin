@@ -14,34 +14,63 @@ export const useTaskHandlers = (
 ) => {
   const toggleTaskCompletion = useCallback(
     async (taskId: string) => {
+      console.log('Toggling task completion for task:', taskId);
       const task = taskList.find(t => t.task_id === taskId);
-  
+      
       if (!task || task.status || task.isProcessing || !memberId) return;
-  
-      setTaskList(prevTasks =>
-        prevTasks.map(t =>
-          t.task_id === taskId ? { ...t, status: true, isProcessing: true } : t
-        )
-      );
-  
+
       try {
+        setTaskList(prevTasks =>
+          prevTasks.map(t =>
+            t.task_id === taskId ? { ...t, status: true, isProcessing: true } : t
+          )
+        );
+
         const taskPoints = task.points || 0;
-  
-        const { error: updateError } = await supabase.rpc('complete_task_and_update_points', {
-          task_id: taskId,
-          member_id: memberId,
-          points: taskPoints,
-        });
-  
+
+        const { error: taskError } = await supabase
+          .from('Tasks')
+          .update({ status: true })
+          .eq('task_id', taskId);
+
+        if (taskError) throw taskError;
+
+        const { data: memberData, error: memberError } = await supabase
+          .from('Members')
+          .select('user_id')
+          .eq('member_id', memberId)
+          .single();
+
+        if (memberError) throw memberError;
+        
+        const userId = memberData.user_id;
+
+        const { data: userData, error: userDataError } = await supabase
+          .from('Users')
+          .select('total_points')
+          .eq('user_id', userId)
+          .single();
+
+        if (userDataError) throw userDataError;
+
+        const currentPoints = userData?.total_points || 0;
+        const updatedPoints = currentPoints + taskPoints;
+
+        const { error: updateError } = await supabase
+          .from('Users')
+          .update({ total_points: updatedPoints })
+          .eq('user_id', userId);
+
         if (updateError) throw updateError;
-  
-        setUserPoints(prevPoints => prevPoints + taskPoints);
+
+        setUserPoints(updatedPoints);
+        
         setTaskList(prevTasks =>
           prevTasks.map(t =>
             t.task_id === taskId ? { ...t, isProcessing: false } : t
           )
         );
-  
+
       } catch (error) {
         setTaskList(prevTasks =>
           prevTasks.map(t =>
@@ -53,14 +82,14 @@ export const useTaskHandlers = (
     },
     [taskList, setTaskList, setUserPoints, setError, memberId]
   );
-  
+
   const removeTask = useCallback(
     async (taskId: string) => {
       try {
         const { error } = await supabase
           .from('Tasks')
           .delete()
-          .eq('task_id', taskId)
+          .eq('task_id', taskId);
 
         if (error) throw error;
 
@@ -69,7 +98,7 @@ export const useTaskHandlers = (
         setError('Error deleting task: ' + (error as Error).message);
       }
     },
-    [householdId, setTaskList, setError, memberId]
+    [setTaskList, setError]
   );
 
   return { toggleTaskCompletion, removeTask };
