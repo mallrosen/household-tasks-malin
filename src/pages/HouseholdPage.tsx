@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchHouseholdName, fetchMembers, fetchUsers, getSession } from '../services/superbaseService';  
+import { fetchHouseholdName, fetchMembers, fetchUsers } from '../services/superbaseService';  
 import { ChartComponent } from '../components/ChartComponent'; 
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
+import { ITask } from '../models/ITask';
+import { supabase } from '../services/supabaseClient';
 import "../styles/main.scss";
 import { useAuth } from '../context/AuthContext';
+import { CompletedTasksList } from '../components/CompletedTasksList';
+
+
 
 export const HouseholdPage = () => {
   const { householdId } = useParams<{ householdId: string }>();
@@ -15,6 +20,8 @@ export const HouseholdPage = () => {
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<any>(null);
   const [householdName, setHouseholdName] = useState<string | null>(null);
+  const [selectedMember, setSelectedMember] = useState<string | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<ITask[]>([]);
   const { session } = useAuth();
 
   useEffect(() => {
@@ -39,11 +46,37 @@ export const HouseholdPage = () => {
       }
     };
 
-    if (session &&  householdId) {
+    if (session && householdId) {
       fetchHouseholdDetails(householdId);
     }
   }, [session, householdId]);
 
+  const fetchCompletedTasks = async (memberId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('Tasks')
+        .select('*')
+        .eq('member_id', memberId)
+        .eq('status', true);
+
+      if (error) throw error;
+      return data || [];
+    } catch (err) {
+      console.error('Error fetching completed tasks:', err);
+      return [];
+    }
+  };
+
+  const handleMemberClick = async (memberId: string) => {
+    if (selectedMember === memberId) {
+      setSelectedMember(null);
+      setCompletedTasks([]);
+    } else {
+      const tasks = await fetchCompletedTasks(memberId);
+      setCompletedTasks(tasks);
+      setSelectedMember(memberId);
+    }
+  };
 
   const generateChartData = (members: IMembers[], users: IUser[]) => {
     const labels: string[] = [];
@@ -56,15 +89,15 @@ export const HouseholdPage = () => {
         data.push(user.total_points || 0);  
       }
     });
-    
 
     return {
       labels,
       datasets: [
         {
           data,
-          backgroundColor: ['#F08080', '#194345', '#366223', '#23294F', '#5C7C7E', '#91B383', '#87CEEB', '#BA55D3', '#008080', '#708090', '#FFB256'
-
+          backgroundColor: [
+            '#F08080', '#194345', '#366223', '#23294F', '#5C7C7E', 
+            '#91B383', '#87CEEB', '#BA55D3', '#008080', '#708090', '#FFB256'
           ],
         },
       ],
@@ -88,12 +121,23 @@ export const HouseholdPage = () => {
           const user = users.find(user => user.user_id === member.user_id);
           return (
             <li key={member.member_id} className="member-item">
-            {user?.username || 'Unknown User'}
-            
-            {user?.total_points != null && (
-              <span className="points"> - {user.total_points} points</span>
-            )}
-          </li>
+              <button 
+                onClick={() => handleMemberClick(member.member_id)}
+                className="member-button"
+              >
+                {user?.username || 'Unknown User'}
+                {user?.total_points != null && (
+                  <span className="points"> - {user.total_points} points</span>
+                )}
+              </button>
+              {selectedMember === member.member_id && (
+                <CompletedTasksList 
+                  tasks={completedTasks}
+                  onClose={() => setSelectedMember(null)}
+                  username={user?.username || 'Unknown User'}
+                />
+              )}
+            </li>
           );
         })}
       </ul>

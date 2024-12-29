@@ -28,7 +28,7 @@ export const Tasks = () => {
     setUserPoints,
     setError,
     error,
-    memberId
+    memberId,
   );
 
   useEffect(() => {

@@ -5,5 +5,6 @@ export interface IMembers {
     role?: string | null;
     username?: string;
     total_points?: number;
+    weekly_points?: number;
     
   }

@@ -1,15 +1,16 @@
-import { FullReport } from '../components/FullReport';
+// import { FullReport } from '../components/FullReport';
 import { WeeklyReport } from '../components/WeeklyReport';
 
-export const ReportPage = ({ householdId }: { householdId: string }) => {
+
+export const ReportPage = () => {
   return (
     <div>
       <h1>Reports</h1>
-      <div>
+      {/* <div>
         <FullReport householdId={householdId} />
-      </div>
+      </div> */}
       <div>
-        <WeeklyReport householdId={householdId} />
+      <WeeklyReport/>
       </div>
     </div>
   );

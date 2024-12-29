@@ -36,7 +36,7 @@ export const useUserAndTasks = () => {
 
         const { data: userData, error: pointsError } = await supabase
           .from('Users')
-          .select('total_points')
+          .select('total_points, weekly_points')
           .eq('user_id', userId)
           .single();
 

@@ -15,11 +15,13 @@ export const useTaskHandlers = (
   const toggleTaskCompletion = useCallback(
     async (taskId: string) => {
       console.log('Toggling task completion for task:', taskId);
+
       const task = taskList.find(t => t.task_id === taskId);
-      
+
       if (!task || task.status || task.isProcessing || !memberId) return;
 
       try {
+
         setTaskList(prevTasks =>
           prevTasks.map(t =>
             t.task_id === taskId ? { ...t, status: true, isProcessing: true } : t
@@ -42,42 +44,53 @@ export const useTaskHandlers = (
           .single();
 
         if (memberError) throw memberError;
-        
+
         const userId = memberData.user_id;
 
         const { data: userData, error: userDataError } = await supabase
           .from('Users')
-          .select('total_points')
+          .select('total_points, weekly_points')
           .eq('user_id', userId)
           .single();
 
         if (userDataError) throw userDataError;
 
-        const currentPoints = userData?.total_points || 0;
-        const updatedPoints = currentPoints + taskPoints;
+        const currentTotalPoints = userData?.total_points || 0;
+        const currentWeeklyPoints = userData?.weekly_points || 0;
+
+
+        const updatedTotalPoints = currentTotalPoints + taskPoints;
+        const updatedWeeklyPoints = currentWeeklyPoints + taskPoints;
 
         const { error: updateError } = await supabase
           .from('Users')
-          .update({ total_points: updatedPoints })
+          .update({ 
+            total_points: updatedTotalPoints, 
+            weekly_points: updatedWeeklyPoints 
+          })
           .eq('user_id', userId);
 
         if (updateError) throw updateError;
 
-        setUserPoints(updatedPoints);
-        
+        setUserPoints(updatedTotalPoints);
+
+
         setTaskList(prevTasks =>
           prevTasks.map(t =>
             t.task_id === taskId ? { ...t, isProcessing: false } : t
           )
         );
 
+        console.log(`Task ${taskId} completed successfully. Points updated.`);
       } catch (error) {
+
         setTaskList(prevTasks =>
           prevTasks.map(t =>
             t.task_id === taskId ? { ...t, status: false, isProcessing: false } : t
           )
         );
         setError('Error completing task: ' + (error as Error).message);
+        console.error('Error toggling task completion:', error);
       }
     },
     [taskList, setTaskList, setUserPoints, setError, memberId]
@@ -94,8 +107,10 @@ export const useTaskHandlers = (
         if (error) throw error;
 
         setTaskList(prevTasks => prevTasks.filter(task => task.task_id !== taskId));
+        console.log(`Task ${taskId} deleted successfully.`);
       } catch (error) {
         setError('Error deleting task: ' + (error as Error).message);
+        console.error('Error deleting task:', error);
       }
     },
     [setTaskList, setError]
@@ -103,3 +118,4 @@ export const useTaskHandlers = (
 
   return { toggleTaskCompletion, removeTask };
 };
+

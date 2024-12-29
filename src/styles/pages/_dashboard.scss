@@ -19,6 +19,11 @@
   
       h2, h3 {
         font-size: 1.2rem;
+
+        &::first-letter {
+          text-transform: capitalize;
+        }
+
       }
   
       ul {
@@ -29,6 +34,10 @@
         li {
           padding: 0.5rem 0;
           border: 1px solid #ddd;
+
+          &::first-letter {
+            text-transform: capitalize;
+          }
   
   
         }

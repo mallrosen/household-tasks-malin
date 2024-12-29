@@ -127,7 +127,7 @@ export const fetchMembers = async (householdId: string): Promise<IMembers[]> => 
   try {
     const { data, error } = await supabase
       .from('Members')
-      .select('member_id, user_id, household_id, Users(username, total_points)')
+      .select('member_id, user_id, household_id, Users(username, total_points, weekly_points)')
       .eq('household_id', householdId);
 
     if (error) {
@@ -139,8 +139,11 @@ export const fetchMembers = async (householdId: string): Promise<IMembers[]> => 
       member_id: member.member_id,
       user_id: member.user_id,
       household_id: member.household_id,
+      Users: member.Users ? member.Users[0] : null,
       username: member.Users?.[0]?.username || 'Unknown User',
       total_points: member.Users?.[0]?.total_points || 0,
+      name: member.Users?.[0]?.username || 'Unknown Name',
+      weekly_points: member.Users?.[0]?.weekly_points || 0,
     }));
   } catch (error) {
     console.error('Error fetching members:', error);
@@ -192,22 +195,6 @@ export const fetchTotalPoints = async (householdId: string) => {
   }
 };
 
-export const fetchWeeklyPoints = async (householdId: string) => {
-  try {
-    const { data, error } = await supabase
-      .rpc('get_weekly_points', { household_id: householdId }); // Exempel på en stored procedure
-
-    if (error) {
-      console.error('Error fetching weekly points:', error.message);
-      return [];
-    }
-
-    return data; // Returnerar veckans poäng
-  } catch (error) {
-    console.error('Error fetching weekly points:', error);
-    return [];
-  }
-};
 
 
 export const getSession = async (): Promise<Session | null> => {
@@ -223,5 +210,39 @@ export const getSession = async (): Promise<Session | null> => {
   } catch (error) {
     console.error('Error fetching session:', error);
     return null;
+  }
+};
+
+
+export const getParticipants = async (householdId: string) => {
+  try {
+    const { data: competition, error: competitionError } = await supabase
+      .from('WeeklyCompetition')
+      .select('*')
+      .eq('household_id', householdId)
+      .eq('is_active', true)
+      .maybeSingle(); 
+
+    if (competitionError) {
+      console.error('Error fetching competition:', competitionError);
+      return [];
+    }
+
+    if (!competition) return [];
+
+    const { data: participants, error: participantsError } = await supabase
+      .from('Users')
+      .select('username, weekly_points')
+      .in('user_id', competition.participant_ids);
+
+    if (participantsError) {
+      console.error('Error fetching participants:', participantsError);
+      return [];
+    }
+
+    return participants;
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return [];
   }
 };

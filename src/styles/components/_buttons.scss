@@ -4,11 +4,12 @@
 button {
   background-color: vars.$accent-color;
   color: vars.$primary-color-light;
-  padding: 100px;
   font-size: typ.$font-size;
   border-radius: 5px;
   cursor: pointer;
   margin: 10px;
+  border: 1px solid vars.$border-color;
+  padding: 10px !important;
 
   &:hover {
     background-color: vars.$accent-color-dark; 
