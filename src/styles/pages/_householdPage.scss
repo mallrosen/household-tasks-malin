@@ -7,11 +7,12 @@
   gap: 2rem; 
 
   .header-section {
+    margin-top: 40px;
     text-align: center;
 
     .household-title {
       font-size: 2rem;
-      margin: 0;
+      margin-bottom: 2rem;
     }
 
     .points-distribution-title {
@@ -24,7 +25,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
 
     .chart-container {
       width: 85%;
@@ -50,7 +50,7 @@
         color: #23294F;
         cursor: pointer;
 
-        .memberAndPoints{
+        .memberAndPoints li {
           display: flex;
           flex-direction: column;
           justify-content: space-between;

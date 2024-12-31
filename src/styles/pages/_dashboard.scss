@@ -4,6 +4,7 @@
     flex-direction: column;
     align-items: center;
     padding: 1rem;
+    margin-top: 100px;
     
   
     h2, h3 {
@@ -64,7 +65,7 @@
         
       }
       @media screen and (min-width: 768px) {
-        background-color: rgba(65, 103, 105, 0.5); // Semi-transparent accent-color 
+        background-color: rgba(65, 103, 105, 0.5); 
         width: 50vw;
         border: 1px solid vars.$accent-color;
         border-radius: 10px;

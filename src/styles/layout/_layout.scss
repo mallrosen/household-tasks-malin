@@ -8,54 +8,86 @@ nav {
   left: 0;
   display: flex;
   justify-content: space-evenly;
-  margin-bottom: 100px;
   background: linear-gradient(
     to right,
-    rgba(132, 157, 122, 0.6), /* Semi-transparent primary-color */
-    rgba(79, 87, 119, 0.6)   /* Semi-transparent secondary-color */
+    rgba(132, 157, 122, 0.6),
+    rgba(79, 87, 119, 0.6)
   );
-}
 
-ul {
-  display: flex;
-  list-style: none;
-  padding-left: 0;
-  gap: 10px;
-}
+  .hamburger {
+    display: none;
+    background: none;
+    border:none;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
 
-li {
-  padding: 20px 10px; 
-}
-
-a {
-  display: flex;
-  justify-content: center;
-  text-decoration: none;
-  color: vars.$secondary-color-dark; 
-  font-size: typography.$font-size;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: vars.$primary-color-light; 
+    &:hover {
+      color: vars.$primary-color-light;
+    }
   }
-}
 
-
-
-@media (min-width: 768px) {
-  nav {
-    padding: 5px;
-  }
-   
   ul {
-    gap: 100px;
-  }
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 4rem;
 
-  li {
-    padding: 3px; 
-  }
+    li {
+      padding: 15px 0;
+    }
 
-  a {
-    font-size: typography.$font-size-xl; 
+     a {
+        display: flex;
+        justify-content: center;
+        text-decoration: none;
+        color: vars.$secondary-color-dark; 
+        font-size: typography.$font-size-xl;
+        transition: color 0.3s ease;
+      
+        &:hover {
+          color: vars.$primary-color-light; 
+        }
+      }
+  }
+}
+
+@media (max-width: 768px) {
+  nav {
+    .hamburger {
+      display: block;
+    }
+
+    ul {
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(
+        to right,
+        rgba(132, 157, 122, 0.9),
+        rgba(79, 87, 119, 0.9)
+      );
+      display: none;
+      gap: 1rem;
+
+      &.open {
+        display: flex;
+      }
+
+      li {
+        text-align: center;
+
+      }
+
+    .logout-button {
+      color: white;
+
+      &:hover {
+        color: rgb(247, 143, 143);
+      }
+    }
+    }
   }
 }

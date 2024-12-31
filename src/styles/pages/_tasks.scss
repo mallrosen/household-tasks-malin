@@ -53,7 +53,15 @@
 }
  
 button {
-  padding: 5px 9px;
+  background: none;
+  border: none;
+  color:vars.$secondary-color-dark;
+
+  &:hover {
+    background: none;
+    cursor: pointer;
+    color:vars.$accent-color-dark;
+  }
 }
 
 @media (min-width: 768px) {
