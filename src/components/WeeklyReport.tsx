@@ -12,13 +12,12 @@ interface IUser {
 }
 
 interface IMembers {
+  user_id: string;
   username: string;
+  weekly_points: number;
   total_points: number;
   member_id: string;
-  user_id: string;
   household_id: string;
-  Users: IUser[] | null;
-  weekly_points: number;
 }
 
 interface Participant {
@@ -30,7 +29,7 @@ export const WeeklyReport = () => {
   const [members, setMembers] = useState<IMembers[]>([]);
   const [isCompetitionActive, setIsCompetitionActive] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState('');
-  const [winner, setWinner] = useState<IMembers | null>(null);
+  const [winner, setWinner] = useState<IMembers[] | null>(null);
   const [showWinner, setShowWinner] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -58,11 +57,11 @@ export const WeeklyReport = () => {
 
   const startTimer = (endTime: Date) => {
     if (currentTimer) clearInterval(currentTimer);
-  
+
     currentTimer = setInterval(() => {
       const now = new Date().getTime();
       const distance = endTime.getTime() - now;
-  
+
       if (distance <= 0) {
         clearInterval(currentTimer!);
         currentTimer = null;
@@ -78,28 +77,19 @@ export const WeeklyReport = () => {
   const determineWinner = async () => {
     if (!householdId) return;
 
-    const { data, error } = await supabase
-      .rpc('get_top_participant', { _household_id: householdId });
+    const { data: winners, error } = await supabase.rpc('get_top_participants', {
+      _household_id: householdId,
+    });
 
-    if (error || !data?.[0]) {
-      console.error("Error determining winner:", error);
+    if (error || !winners?.length) {
+      console.error('Error determining winners:', error);
       return;
     }
 
-    const winnerData = data[0];
-    setWinner({
-      user_id: winnerData.user_id,
-      username: winnerData.username || 'Unknown User',
-      weekly_points: winnerData.weekly_points || 0,
-      total_points: winnerData.total_points || 0,
-      household_id: householdId,
-      member_id: winnerData.member_id || 'Unknown Member ID',
-      Users: winnerData.Users || null,
-    });
+    setWinner(winners);
     setShowWinner(true);
-    setWinner(winnerData);
-    setShowWinner(true);
-    saveWinner(winnerData);
+    saveWinners(winners);
+
     await supabase
       .from('WeeklyCompetition')
       .update({ is_active: false })
@@ -109,10 +99,19 @@ export const WeeklyReport = () => {
     await resetMemberPoints(members);
     setIsCompetitionActive(false);
   };
-  const saveWinner = (winnerData: IMembers) => {
-    localStorage.setItem('winner', JSON.stringify(winnerData));
+
+  const saveWinners = (winners: IMembers[]) => {
+    localStorage.setItem('winners', JSON.stringify(winners));
     localStorage.setItem('showWinner', 'true');
   };
+
+  const resetFunction = () => {
+    setShowWinner(false);
+    setWinner(null);
+    localStorage.removeItem('winners');
+    localStorage.removeItem('showWinner');
+  };
+
   const resetMemberPoints = async (members: IMembers[]): Promise<void> => {
     const resetPromises = members.map(async (member) => {
       try {
@@ -123,12 +122,9 @@ export const WeeklyReport = () => {
 
         if (error) {
           console.error('Error resetting points for user:', member.user_id, error);
-          return { success: false, user_id: member.user_id, message: error.message };
         }
-        return { success: true, user_id: member.user_id };
       } catch (error) {
         console.error('Error resetting points:', error);
-        return { success: false, user_id: member.user_id, message: (error as Error).message };
       }
     });
 
@@ -148,33 +144,29 @@ export const WeeklyReport = () => {
 
       if (membersError || !members?.length) throw new Error('No members found');
 
-      const participantIds = members.map(member => member.user_id);
+      const participantIds = members.map((member) => member.user_id);
 
       await supabase
         .from('WeeklyCompetition')
-        .insert([{
-          start_time: startTime,
-          end_time: endTime,
-          is_active: true,
-          household_id: householdId,
-          participant_ids: participantIds,
-        }]);
+        .insert([
+          {
+            start_time: startTime,
+            end_time: endTime,
+            is_active: true,
+            household_id: householdId,
+            participant_ids: participantIds,
+          },
+        ]);
 
       setIsCompetitionActive(true);
       startTimer(new Date(endTime));
-      
+
       const participantsData = await getParticipants(householdId);
       setParticipants(participantsData || []);
     } catch (error) {
       console.error('Error starting competition:', error);
     }
-  };
-
-  const resetFunction = () => {
-    setShowWinner(false);
-    setWinner(null);
-    localStorage.removeItem('winner');
-    localStorage.removeItem('showWinner');
+    resetFunction();
   };
 
   useEffect(() => {
@@ -183,17 +175,17 @@ export const WeeklyReport = () => {
         try {
           setIsLoading(true);
           const activeCompetition = await checkActiveCompetition(householdId);
-          
+
           if (activeCompetition) {
             setIsCompetitionActive(true);
             startTimer(new Date(activeCompetition.end_time));
           }
-          
+
           const [participantsData, membersData] = await Promise.all([
             getParticipants(householdId),
-            getMembersAndPoints(householdId)
+            getMembersAndPoints(householdId),
           ]);
-          
+
           setParticipants(participantsData || []);
           setMembers(membersData);
         } catch (error) {
@@ -204,11 +196,11 @@ export const WeeklyReport = () => {
       }
     };
 
-    const savedWinner = localStorage.getItem('winner');
+    const savedWinners = localStorage.getItem('winners');
     const savedShowWinner = localStorage.getItem('showWinner');
-    
-    if (savedWinner && savedShowWinner === 'true') {
-      setWinner(JSON.parse(savedWinner));
+
+    if (savedWinners && savedShowWinner === 'true') {
+      setWinner(JSON.parse(savedWinners));
       setShowWinner(true);
     }
 
@@ -218,37 +210,47 @@ export const WeeklyReport = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h2>Weekly Competition</h2>
-      {!isCompetitionActive && (
-        <button onClick={() => householdId && startWeeklyCompetition(householdId)}>
-          Start Weekly Competition
-        </button>
-      )}
-      {isCompetitionActive && <p>Time Remaining: {timeRemaining}</p>}
+    <>
       <div>
-        {isCompetitionActive && (
-          <div>
-            <h3>Current Standings</h3>
-            {participants.map((participant) => (
-              <div key={participant.username} className="flex justify-between p-2 border-b">
-                <span>{participant.username}</span>
-                <span>{participant.weekly_points || 0} points</span>
-              </div>
-            ))}
+        {winner && showWinner && (
+          <div className="winnerContainer">
+            <div>
+              <h2>Competition Winners</h2>
+              <Trophy size={40} />
+              <h3>Winners of the Week!</h3>
+              {winner.map((win) => (
+                <div key={win.user_id}>
+                  <p>{win.username}</p>
+                  <p>{win.weekly_points} points</p>
+                </div>
+              ))}
+              <button onClick={resetFunction}>Hide Winners</button>
+            </div>
           </div>
         )}
       </div>
-      {winner && showWinner && (
+      <div className="WeeklyGame">
+        <h2>Weekly Competition</h2>
+        {isCompetitionActive && <p>Time Remaining: {timeRemaining}</p>}
         <div>
-          <h2>Competition Winner</h2>
-          <Trophy size={40} />
-          <h3>Winner of the Week!</h3>
-          <p>{winner.username}</p>
-          <p>{winner.weekly_points} points</p>
-          <button onClick={resetFunction}>Hide Winner</button>
+          {isCompetitionActive && (
+            <div>
+              <h3>Players</h3>
+              {participants.map((participant) => (
+                <div key={participant.username}>
+                  <span>{participant.username}</span>
+                  <span>{participant.weekly_points || 0} points</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+        {!isCompetitionActive && (
+          <button onClick={() => householdId && startWeeklyCompetition(householdId)}>
+            Start Weekly Competition
+          </button>
+        )}
+      </div>
+    </>
   );
 };
