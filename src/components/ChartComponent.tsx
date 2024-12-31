@@ -10,7 +10,7 @@ export const ChartComponent = ({ data }: { data: any }) => {
   }
 
   return (
-    <div style={{ maxWidth: '500px', margin: 'auto' }}>
+    <div className='diagram'>
       <Pie
         data={data}
         options={{

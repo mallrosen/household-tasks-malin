@@ -127,7 +127,7 @@ export const fetchMembers = async (householdId: string): Promise<IMembers[]> => 
   try {
     const { data, error } = await supabase
       .from('Members')
-      .select('member_id, user_id, household_id, Users(username, total_points, weekly_points)')
+      .select('member_id, user_id, household_id, role, Users(username, total_points, weekly_points)')
       .eq('household_id', householdId);
 
     if (error) {
@@ -139,6 +139,7 @@ export const fetchMembers = async (householdId: string): Promise<IMembers[]> => 
       member_id: member.member_id,
       user_id: member.user_id,
       household_id: member.household_id,
+      role: member.role || null,
       Users: member.Users ? member.Users[0] : null,
       username: member.Users?.[0]?.username || 'Unknown User',
       total_points: member.Users?.[0]?.total_points || 0,
@@ -243,6 +244,35 @@ export const getParticipants = async (householdId: string) => {
     return participants;
   } catch (error) {
     console.error('Unexpected error:', error);
+    return [];
+  }
+};
+
+
+export const getMembersAndPoints = async (householdId: string): Promise<IMembers[]> => {
+  try {
+    const { data, error } = await supabase.rpc('get_members_and_points', { household_id: householdId });
+
+    if (error) {
+      console.error("Error fetching members:", error);
+      return [];
+    }
+
+    return (data || []).map((member: IMembers) => ({
+      member_id: member.member_id,
+      user_id: member.user_id,
+      username: member.username || 'Unknown User',
+      total_points: member.total_points || 0,
+      household_id: member.household_id,
+      Users: member.Users ? member.Users.map((user: IUser) => ({
+        user_id: user.user_id,
+        username: user.username,
+        weekly_points: user.weekly_points,
+        total_points: user.total_points,
+      })) : null,
+    }));
+  } catch (error) {
+    console.error("Error fetching members:", error);
     return [];
   }
 };

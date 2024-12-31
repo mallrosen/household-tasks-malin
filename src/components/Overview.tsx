@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchHousehold, fetchMembers, fetchTasks, fetchUsers } from '../services/superbaseService';
-import { ITask } from '../models/ITask';
+import { fetchHousehold, fetchMembers, fetchUsers } from '../services/superbaseService';
 import { IHousehold } from '../models/IHousehold';
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
@@ -9,12 +8,12 @@ import "../styles/main.scss";
 interface OverviewProps {
   householdId: string;
   userId: string;
-  householdName: string;
+  navigateToTasks: () => void;
+
 }
 
-export const Overview = ({ householdId, userId }: OverviewProps) => {
+export const Overview = ({ householdId, userId, navigateToTasks }: OverviewProps) => {
   const [users, setUsers] = useState<IUser[]>([]); 
-  const [tasks, setTasks] = useState<ITask[]>([]); 
   const [household, setHousehold] = useState<IHousehold | null>(null);
   const [members, setMembers] = useState<IMembers[]>([]);
   const [userPoints, setUserPoints] = useState<number>(0);
@@ -30,9 +29,6 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
 
         const membersData = await fetchMembers(householdId);
         setMembers(membersData);
-
-        const tasksData = await fetchTasks(householdId);
-        setTasks(tasksData || []);
 
         const user = usersData.find((user: { user_id: string; }) => user.user_id === userId);
         if (user) {
@@ -50,31 +46,21 @@ export const Overview = ({ householdId, userId }: OverviewProps) => {
     members.some(member => member.user_id === user.user_id)
   );
 
-  const filteredTasks = tasks.filter(() =>
-    members.some(member => member.user_id === userId)
-  );
-
   return (
     <div className='overview'>
-      <h2>Household</h2>
+      <h2>Household:</h2>
       <h3>{household ? `${household.name}` : 'No household found'}</h3>
-
-      <h2>Your Points</h2>
-      <h3>{userPoints !== null ? `Your points: ${userPoints}` : 'Points not found'}</h3>
-
-      <h2>Household members</h2>
+      <h2>Your Points:</h2>
+      <h3>{userPoints !== null ? `${userPoints} p` : 'Points not found'}</h3>
+      <h2>Household members:</h2>
       <ul className="members-list">
         {householdUsers.map(user => (
-          <li key={user.user_id}>{user.username}</li>
+          <h3 key={user.user_id}>{user.username}</h3>
         ))}
       </ul>
-
-      <h2>Tasks</h2>
-      <ul>
-        {filteredTasks.map(task => (
-          <li key={task.task_id}>{task.name}</li>
-        ))}
-      </ul>
+      <h2>Tasks:</h2>
+      <h4>Get Things Done!</h4>
+      <button onClick={navigateToTasks}>Go to Tasks</button>
     </div>
   );
 };

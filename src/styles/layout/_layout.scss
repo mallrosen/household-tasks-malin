@@ -9,7 +9,11 @@ nav {
   display: flex;
   justify-content: space-evenly;
   margin-bottom: 100px;
-  background: linear-gradient(to right, vars.$primary-color, vars.$secondary-color);
+  background: linear-gradient(
+    to right,
+    rgba(132, 157, 122, 0.6), /* Semi-transparent primary-color */
+    rgba(79, 87, 119, 0.6)   /* Semi-transparent secondary-color */
+  );
 }
 
 ul {

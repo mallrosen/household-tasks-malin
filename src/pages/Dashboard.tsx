@@ -15,6 +15,7 @@ export const Dashboard = () => {
   } = useAuth();
 
   const [householdName, setHouseholdName] = useState('');
+  const [username, setUsername] = useState<string | null>('');
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [householdCreated, setHouseholdCreated] = useState(false);
   const [memberId, setMemberId] = useState<string | null>(null);
@@ -26,7 +27,7 @@ export const Dashboard = () => {
     const initializeDashboard = async () => {
       try {
         const session = await getSession();
-        const currentUserId = session?.user?.id;
+        const currentUserId = session?.user?.id;//ÄNDRA till authContext
 
         if (!currentUserId) {
           setError('You must be logged in to see the dashboard');
@@ -150,20 +151,30 @@ export const Dashboard = () => {
     }
   };
 
+  const getUsername = async () => {
+    const { data } = await supabase
+      .from('Users')
+      .select('username')
+      .eq('user_id', userId)
+      .single();
+      if (data) {
+        setUsername(data.username);
+      } else {console.log('No username found');
+      
+        return;
+      }
+  }
+  getUsername();
+
   return (
     <div className='dashboardDiv'>
-      <h2>Welcome to the Dashboard</h2>
+      <h2>Welcome {username && username[0].toUpperCase()+ username.slice(1)}</h2>
 
       {!householdCreated && <CreateHouseholdForm onCreate={createHousehold} />}
       {!householdCreated && <JoinHouseholdForm onJoin={joinHousehold} />}
       {householdCreated && householdId && userId && (
-        <Overview householdId={householdId} userId={userId} householdName={householdName} />
+        <Overview householdId={householdId} userId={userId} navigateToTasks={navigateToTasks } />
       )}
-
-      {householdCreated && (
-        <button onClick={navigateToTasks}>Go to Tasks</button>
-      )}
-
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );

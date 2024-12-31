@@ -114,37 +114,54 @@ export const HouseholdPage = () => {
 
   return (
     <div className="household-page">
-      <h1>{householdName || 'Loading household name...'}</h1> 
-      <h3>Members</h3>
-      <ul className="members-list">
-        {members.map((member) => {
-          const user = users.find(user => user.user_id === member.user_id);
-          return (
-            <li key={member.member_id} className="member-item">
-              <button 
-                onClick={() => handleMemberClick(member.member_id)}
-                className="member-button"
-              >
-                {user?.username || 'Unknown User'}
-                {user?.total_points != null && (
-                  <span className="points"> - {user.total_points} points</span>
-                )}
-              </button>
-              {selectedMember === member.member_id && (
-                <CompletedTasksList 
-                  tasks={completedTasks}
-                  onClose={() => setSelectedMember(null)}
-                  username={user?.username || 'Unknown User'}
-                />
-              )}
-            </li>
-          );
-        })}
-      </ul>
-      <h3>Points Distribution</h3>
-      {chartData && <ChartComponent data={chartData} />}
+      <div className="header-section">
+        <h1 className="household-title">{householdName && householdName[0].toUpperCase() + householdName.slice(1)} - Overview Page</h1>
+        <h3 className="points-distribution-title">Points Distribution</h3>
+      </div>
+
+      <div className="content-section">
+        <div className="chart-container">
+          {chartData && <ChartComponent data={chartData} />}
+        </div>
+        <ul className="members-list">
+          {members.map((member) => {
+            const user = users.find(user => user.user_id === member.user_id);
+            return (
+              <li key={member.member_id} className="member-item">
+                <button
+                  onClick={() => handleMemberClick(member.member_id)}
+                  className="member-button"
+                >{<span className='memberAndPoints'>
+                  {user?.username || 'Unknown User'}
+                  {user?.total_points != null && (
+                    <span className="points"> - {user.total_points} points</span>
+                  )}
+                  </span>
+                }
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+  
+      {selectedMember && (
+        <div className="modal-overlay" onClick={() => setSelectedMember(null)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CompletedTasksList
+              tasks={completedTasks}
+              onClose={() => setSelectedMember(null)}
+              username={
+                users.find(user => user.user_id === selectedMember)?.username ||
+                'Unknown User'
+              }
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-
+}
