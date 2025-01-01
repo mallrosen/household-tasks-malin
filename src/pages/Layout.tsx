@@ -78,10 +78,10 @@ export const Layout = ({ children }: LayoutProps) => {
           </button>
           <ul className={`menu ${isMenuOpen ? 'open' : ''}`}>
             <li>
-              <NavLink to={`/tasks/${householdId}/${memberId}`}>Tasks</NavLink>
+              <NavLink to="/dashboard">Dashboard</NavLink>
             </li>
             <li>
-              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to={`/tasks/${householdId}/${memberId}`}>Tasks</NavLink>
             </li>
             <li>
               <NavLink to={`/household/${householdId}`}>Household</NavLink>

@@ -36,11 +36,11 @@ export const AddTaskForm = ({ handleSubmit }: { handleSubmit: Function }) => {
 
   return (
     <div className="add-task-form">
-      <h3>Add New Task</h3>
+      <h3>Add New Tasks</h3>
       <form onSubmit={handleFormSubmit}>
         <input
           type="text"
-          placeholder="Add Task"
+          placeholder="Add task here..."
           value={taskName}
           onChange={(e) => setTaskName(e.target.value)}
           required

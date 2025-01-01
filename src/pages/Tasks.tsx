@@ -53,7 +53,7 @@ export const Tasks = () => {
         if (tasks.length > 0) {
           setTaskList(tasks);
         } else {
-          setError('No tasks found for household');
+          console.error('No tasks found for household');
         }
       } catch (error) {
         setError('Error fetching data: ' + (error as Error).message);
@@ -97,7 +97,7 @@ export const Tasks = () => {
 
   return (
     <>
-      <div>
+      <div className='taskPage'>
         <TaskList
           tasks={taskList}
           onToggle={toggleTaskCompletion}

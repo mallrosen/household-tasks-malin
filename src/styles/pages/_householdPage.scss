@@ -96,6 +96,7 @@
       z-index: 1000;
   
       .modal-content {
+        margin:10px;
         background: vars.$accent-color-light;
         color: vars.$primary-color-light;
         font-size: typography.$font-size-lg;

@@ -44,6 +44,7 @@
     padding: 20px;
     border-radius: 8px;
     margin: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
    
     h2 {
       color: vars.$secondary-color-dark;
@@ -67,7 +68,8 @@
     button {
       background: vars.$primary-color;
       color: whitesmoke;
-      border: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: 1px solid vars.$primary-color-dark;
       padding: 10px 20px;
       border-radius: 4px;
       margin-top: 15px;

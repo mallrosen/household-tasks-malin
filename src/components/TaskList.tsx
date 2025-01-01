@@ -24,9 +24,9 @@ export const TaskList = ({ tasks, onToggle, onRemove }:TaskListProps) => {
             {task.name} (Difficulty: {task.difficulty}, Points: {task.points})
           </span>
           {!task.status && (
-            <button onClick={() => onToggle(task.task_id, task.points)}>Complete</button>
+            <button className='completeBtn' onClick={() => onToggle(task.task_id, task.points)}>Complete</button>
           )}
-          <button onClick={() => onRemove(task.task_id, task.points)}>
+          <button className='removeBtn' onClick={() => onRemove(task.task_id, task.points)}>
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>

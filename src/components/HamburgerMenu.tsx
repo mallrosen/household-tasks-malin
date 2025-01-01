@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 interface HamburgerMenuProps {
@@ -20,13 +20,13 @@ export const HamburgerMenu = ({ householdId, memberId, handleLogout }: Hamburger
           {householdId && memberId && (
             <>
               <li>
-                <NavLink to={`/tasks/${householdId}/${memberId}`} onClick={() => setMenuOpen(false)}>
-                  Tasks
+                <NavLink to="/dashboard" onClick={() => setMenuOpen(false)}>
+                  Dashboard
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard" onClick={() => setMenuOpen(false)}>
-                  Dashboard
+                <NavLink to={`/tasks/${householdId}/${memberId}`} onClick={() => setMenuOpen(false)}>
+                  Tasks
                 </NavLink>
               </li>
               <li>

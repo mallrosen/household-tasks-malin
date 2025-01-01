@@ -16,10 +16,10 @@ export const Dashboard = () => {
 
   const [householdName, setHouseholdName] = useState('');
   const [username, setUsername] = useState<string | null>('');
-  const [householdId, setHouseholdId] = useState<string | null>(null);
+  const [householdId, setHouseholdId] = useState<string | null>('');
   const [householdCreated, setHouseholdCreated] = useState(false);
-  const [memberId, setMemberId] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [memberId, setMemberId] = useState<string | null>('');
+  const [userId, setUserId] = useState<string | null>('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 

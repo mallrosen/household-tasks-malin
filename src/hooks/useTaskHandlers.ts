@@ -12,6 +12,8 @@ export const useTaskHandlers = (
   error: string | null,
   memberId: string | null
 ) => {
+  
+
   const toggleTaskCompletion = useCallback(
     async (taskId: string) => {
       console.log('Toggling task completion for task:', taskId);
