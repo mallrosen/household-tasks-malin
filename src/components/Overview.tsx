@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { fetchHousehold, fetchMembers, fetchUsers } from '../services/superbaseService';
+import { fetchMembers } from '../services/memberService';
+import { fetchUsers } from '../services/userService';
+import { fetchHousehold } from '../services/householdService';
 import { IHousehold } from '../models/IHousehold';
 import { IMembers } from '../models/IMembers';
 import { IUser } from '../models/IUser';
@@ -9,11 +11,10 @@ interface OverviewProps {
   householdId: string;
   userId: string;
   navigateToTasks: () => void;
-
 }
 
 export const Overview = ({ householdId, userId, navigateToTasks }: OverviewProps) => {
-  const [users, setUsers] = useState<IUser[]>([]); 
+  const [users, setUsers] = useState<IUser[]>([]);
   const [household, setHousehold] = useState<IHousehold | null>(null);
   const [members, setMembers] = useState<IMembers[]>([]);
   const [userPoints, setUserPoints] = useState<number>(0);
@@ -30,9 +31,12 @@ export const Overview = ({ householdId, userId, navigateToTasks }: OverviewProps
         const membersData = await fetchMembers(householdId);
         setMembers(membersData);
 
-        const user = usersData.find((user: { user_id: string; }) => user.user_id === userId);
+        const user = usersData.find((user) => user.user_id === userId);
         if (user) {
-          setUserPoints(user.total_points); 
+          setUserPoints(user.total_points || 0); 
+        } else {
+          setUserPoints(0); 
+          console.error('User not found');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -40,7 +44,7 @@ export const Overview = ({ householdId, userId, navigateToTasks }: OverviewProps
     }
 
     fetchData();
-  }, [householdId, userId]); 
+  }, [householdId, userId]);
 
   const householdUsers = users.filter(user => 
     members.some(member => member.user_id === user.user_id)

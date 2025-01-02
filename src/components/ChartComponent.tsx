@@ -1,14 +1,17 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import "../styles/main.scss";
+import { IChartData } from '../models/IChartData';
+import { IMembers } from '../models/IMembers';
+import { IUser } from '../models/IUser';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export const ChartComponent = ({ data }: { data: any }) => {
-  if (!data) {
-    return <div>Loading chart...</div>;
-  }
+export const ChartComponent = ({ data }: { data: IChartData }) => {
 
+  if (!data) {
+  return <div>Loading chart...</div>;
+  }
   return (
     <div className='diagram'>
       <Pie

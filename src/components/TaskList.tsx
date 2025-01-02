@@ -5,11 +5,8 @@ import "../styles/main.scss";
 
 
 interface TaskListProps {
-
   tasks: ITask[];
-
   onToggle: (taskId: string, points: number) => Promise<void>;
-
   onRemove: (taskId: string, points: number) => Promise<void>;
 
 }

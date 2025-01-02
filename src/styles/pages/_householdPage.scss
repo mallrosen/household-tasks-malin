@@ -83,79 +83,77 @@
     }
   }
   
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
   
-      .modal-content {
-        margin:10px;
-        background: vars.$accent-color-light;
-        color: vars.$primary-color-light;
-        font-size: typography.$font-size-lg;
-        border-radius: 8px;
-        padding: 1.5rem;
-        position: relative;
+    .modal-content {
+      margin: 10px;
+      background: vars.$accent-color-light;
+      color: vars.$primary-color-light;
+      font-size: typography.$font-size-lg;
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: relative;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh; /* Begränsa höjden */
+      overflow-y: auto; /* Aktivera lodrät scrollning */
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  
+      .completed-tasks-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
         width: 90%;
-        max-width: 500px;
-        min-height: fit-content; 
-        max-height: 80vh;
-        overflow-y: auto; 
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
   
-        .completed-tasks-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          width: 90%;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
+        .completed-task-item {
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+          margin-bottom: 0.5rem;
+          width: 100%;
   
-          .completed-task-item {
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            width: 100%;
-            
-            .task-name {
-              margin: 0;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              font-size: 1rem;
-              
-              
-              span {
-                margin-left: auto;
-                font-weight: bold;
-              }
+          .task-name {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+  
+            span {
+              margin-left: auto;
+              font-weight: bold;
             }
           }
         }
+      }
   
-        .close-button {
-          margin-top: 1rem;
-          width: 90%;
-          padding: 0.5rem;
-          border: none;
-          border-radius: 4px;
-          background: vars.$primary-color-light;
-          color: vars.$accent-color-light;
-          cursor: pointer;
-          
-          &:hover {
-            opacity: 0.9;
-          }
+      .close-button {
+        margin-top: 1rem;
+        width: 90%;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 4px;
+        background: vars.$primary-color-light;
+        color: vars.$accent-color-light;
+        cursor: pointer;
+  
+        &:hover {
+          opacity: 0.9;
         }
       }
     }
+  }
   }

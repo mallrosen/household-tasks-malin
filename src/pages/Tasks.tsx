@@ -1,11 +1,101 @@
-import { useEffect, useState } from 'react';
-import { useUserAndTasks } from '../hooks/useUserAndTasks';
-import { useTaskHandlers } from '../hooks/useTaskHandlers';
-import { AddTaskForm } from '../components/AddTaskForm';
-import { fetchTasksForHousehold } from '../services/superbaseService';
-import { supabase } from '../services/supabaseClient';
-import "../styles/main.scss";
-import { TaskList } from '../components/TaskList';
+// import { useUserAndTasks } from '../hooks/useUserAndTasks';
+// import { useTaskHandlers } from '../hooks/useTaskHandlers';
+// import { AddTaskForm } from '../components/AddTaskForm';
+// import { TaskList } from '../components/TaskList';
+// import "../styles/main.scss";
+// import { supabase } from '../services/supabaseClient';
+// import { useState } from 'react';
+
+import { useState } from "react";
+import { AddTaskForm } from "../components/AddTaskForm";
+import { TaskList } from "../components/TaskList";
+import { supabase } from "../services/supabaseClient";
+import { useUserAndTasks } from "../hooks/useUserAndTasks";
+import { useTaskHandlers } from "../hooks/useTaskHandlers";
+
+// export const Tasks = () => {
+//   const {
+//     memberId,
+//     taskList,
+//     setTaskList,
+//     userPoints,
+//     setUserPoints,
+//     error,
+//     setError,
+//     householdId,
+//   } = useUserAndTasks();
+
+//   const { toggleTaskCompletion, removeTask } = useTaskHandlers(
+//     householdId,
+//     taskList,
+//     setTaskList,
+//     userPoints,
+//     setUserPoints,
+//     setError,
+//     error,
+//     memberId,
+//   );
+
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+
+//   const handleSubmit = async (task: { name: string; difficulty: string; points: number }) => {
+//     if (!memberId) {
+//       setError('Member ID is missing!');
+//       return;
+//     }
+  
+//     if (isSubmitting) return;
+  
+//     setIsSubmitting(true);
+  
+//     try {
+//       const { data, error } = await supabase
+//         .from('Tasks')
+//         .insert({
+//           name: task.name,
+//           difficulty: task.difficulty,
+//           points: task.points,
+//           status: false,
+//           member_id: memberId,
+//         })
+//         .select();
+  
+//       if (error) {
+//         setError('Error adding task: ' + error.message);
+//       } else if (data) {
+//         setTaskList((prevTaskList) => [...prevTaskList, data[0]]);
+//       }
+//     } catch (error) {
+//       setError('Error adding task: ' + (error as Error).message);
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   if (!householdId || !taskList) {
+//     return <div>Loading tasks...</div>;
+//   }
+
+//   return (
+//     <>
+//       <div className='taskPage'>
+//         <TaskList
+//           tasks={taskList}
+//           onToggle={toggleTaskCompletion}
+//           onRemove={removeTask}
+//         />
+
+//         <div className='addTaskForm'>
+//         <AddTaskForm handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
+//         </div>
+
+//         {error && <p style={{ color: 'red' }}>{error}</p>}
+//       </div>
+//     </>
+//   );
+// };
+
+
 
 export const Tasks = () => {
   const {
@@ -16,9 +106,8 @@ export const Tasks = () => {
     setUserPoints,
     error,
     setError,
+    householdId,
   } = useUserAndTasks();
-
-  const [householdId, setHouseholdId] = useState<string | null>(null);
 
   const { toggleTaskCompletion, removeTask } = useTaskHandlers(
     householdId,
@@ -31,44 +120,18 @@ export const Tasks = () => {
     memberId,
   );
 
-  useEffect(() => {
-    const fetchHouseholdAndTasks = async () => {
-      if (!memberId) return;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-      try {
-        const { data: memberData, error: memberError } = await supabase
-          .from('Members')
-          .select('household_id')
-          .eq('member_id', memberId)
-          .single();
-
-        if (memberError || !memberData) {
-          setError('Error fetching household ID');
-          return;
-        }
-
-        setHouseholdId(memberData.household_id);
-
-        const tasks = await fetchTasksForHousehold(memberData.household_id);
-        if (tasks.length > 0) {
-          setTaskList(tasks);
-        } else {
-          console.error('No tasks found for household');
-        }
-      } catch (error) {
-        setError('Error fetching data: ' + (error as Error).message);
-      }
-    };
-
-    fetchHouseholdAndTasks();
-  }, [memberId, setTaskList, setError, householdId]);
-
-  const handleSubmit = async (task: { name: string; difficulty: number; points: number }) => {
+  const handleSubmit = async (task: { name: string; difficulty: string; points: number }) => {
     if (!memberId) {
       setError('Member ID is missing!');
       return;
     }
-
+  
+    if (isSubmitting) return;
+  
+    setIsSubmitting(true);
+  
     try {
       const { data, error } = await supabase
         .from('Tasks')
@@ -80,7 +143,7 @@ export const Tasks = () => {
           member_id: memberId,
         })
         .select();
-
+  
       if (error) {
         setError('Error adding task: ' + error.message);
       } else if (data) {
@@ -88,6 +151,8 @@ export const Tasks = () => {
       }
     } catch (error) {
       setError('Error adding task: ' + (error as Error).message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -95,17 +160,20 @@ export const Tasks = () => {
     return <div>Loading tasks...</div>;
   }
 
+  // Filtrera bort borttagna uppgifter
+  const visibleTasks = taskList.filter(task => !task.deleted);
+
   return (
     <>
       <div className='taskPage'>
         <TaskList
-          tasks={taskList}
+          tasks={visibleTasks} // Skicka endast uppgifter som inte är borttagna
           onToggle={toggleTaskCompletion}
           onRemove={removeTask}
         />
 
         <div className='addTaskForm'>
-          <AddTaskForm handleSubmit={handleSubmit} />
+          <AddTaskForm handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}

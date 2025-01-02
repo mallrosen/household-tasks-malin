@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { getSession } from '../services/superbaseService';
+import { getSession } from '../services/authService';
 import { supabase } from '../services/supabaseClient';
 import '../styles/main.scss';
 import { useAuth } from '../context/AuthContext';

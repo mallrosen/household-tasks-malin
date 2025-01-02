@@ -1,73 +1,28 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateHouseholdForm } from '../components/CreateHousehold';
 import { Overview } from '../components/Overview';
-import { getSession, fetchHousehold } from '../services/superbaseService';
-import { supabase } from '../services/supabaseClient';
 import { JoinHouseholdForm } from '../components/JoinHousehold';
-import { useAuth } from '../context/AuthContext';
+import { useDashboardData } from '../hooks/useDashboardData';
+import { useUsername } from '../hooks/useUsername';
 import "../styles/main.scss";
+import { supabase } from '../services/supabaseClient';
 
 export const Dashboard = () => {
   const {
-    session,
-    loading,
-  } = useAuth();
+    householdName,
+    householdId,
+    householdCreated,
+    memberId,
+    userId,
+    error,
+    setHouseholdId,
+    setHouseholdName,
+    setHouseholdCreated,
+    setError,
+  } = useDashboardData();
 
-  const [householdName, setHouseholdName] = useState('');
-  const [username, setUsername] = useState<string | null>('');
-  const [householdId, setHouseholdId] = useState<string | null>('');
-  const [householdCreated, setHouseholdCreated] = useState(false);
-  const [memberId, setMemberId] = useState<string | null>('');
-  const [userId, setUserId] = useState<string | null>('');
-  const [error, setError] = useState('');
+  const username = useUsername(userId);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const initializeDashboard = async () => {
-      try {
-        const session = await getSession();
-        const currentUserId = session?.user?.id;//ÄNDRA till authContext
-
-        if (!currentUserId) {
-          setError('You must be logged in to see the dashboard');
-          return;
-        }
-
-        setUserId(currentUserId);
-
-        const householdData = await fetchHousehold(currentUserId);
-
-        if (householdData && householdData.length > 0) {
-          const fetchedHouseholdId = householdData[0].household_id;
-          setHouseholdId(fetchedHouseholdId);
-          setHouseholdName(householdData[0].name);
-          setHouseholdCreated(true);
-
-          const { data: memberData, error: memberError } = await supabase
-            .from('Members')
-            .select('member_id')
-            .eq('user_id', currentUserId)
-            .eq('household_id', fetchedHouseholdId)
-            .single();
-
-          if (memberError || !memberData) {
-            setError('Error fetching member info: ' + (memberError?.message));
-          } else {
-            setMemberId(memberData.member_id);
-          }
-        } else {
-          setHouseholdCreated(false);
-          setHouseholdId(null);
-          setHouseholdName('');
-        }
-      } catch (error) {
-        setError('Error initializing dashboard: ' + (error as Error).message);
-      }
-    };
-  
-    initializeDashboard();
-  }, [session, loading, ]); 
 
   const createHousehold = async (name: string) => {
     try {
@@ -110,21 +65,21 @@ export const Dashboard = () => {
         setError('You must be logged in to join a household.');
         return;
       }
-  
+
       const { data: householdData, error: fetchError } = await supabase
         .from('Household')
         .select('household_id')
         .eq('name', householdName)
         .limit(1)
         .single();
-  
+
       if (fetchError || !householdData) {
         setError('Household not found.');
         return;
       }
-  
+
       const householdId = householdData.household_id;
-  
+
       const { error: memberError } = await supabase
         .from('Members')
         .insert([{ user_id: userId, household_id: householdId, role: 'member' }]);
@@ -133,7 +88,7 @@ export const Dashboard = () => {
         setError('Error joining household: ' + memberError.message);
         return;
       }
-  
+
       setHouseholdId(householdId);
       setHouseholdCreated(true);
 
@@ -151,29 +106,14 @@ export const Dashboard = () => {
     }
   };
 
-  const getUsername = async () => {
-    const { data } = await supabase
-      .from('Users')
-      .select('username')
-      .eq('user_id', userId)
-      .single();
-      if (data) {
-        setUsername(data.username);
-      } else {console.log('No username found');
-      
-        return;
-      }
-  }
-  getUsername();
-
   return (
     <div className='dashboardDiv'>
-      <h2>Welcome {username && username[0].toUpperCase()+ username.slice(1)}</h2>
+      <h2>Welcome {username && username[0].toUpperCase() + username.slice(1)}</h2>
 
       {!householdCreated && <CreateHouseholdForm onCreate={createHousehold} />}
       {!householdCreated && <JoinHouseholdForm onJoin={joinHousehold} />}
       {householdCreated && householdId && userId && (
-        <Overview householdId={householdId} userId={userId} navigateToTasks={navigateToTasks } />
+        <Overview householdId={householdId} userId={userId} navigateToTasks={navigateToTasks} />
       )}
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

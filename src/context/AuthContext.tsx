@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getSession, fetchHousehold } from '../services/superbaseService'; 
+import { getSession} from '../services/authService'; 
+import { fetchHousehold } from '../services/householdService';
 import { Session } from '@supabase/supabase-js';
 import { IHousehold } from '../models/IHousehold';
 import { supabase } from '../services/supabaseClient';
