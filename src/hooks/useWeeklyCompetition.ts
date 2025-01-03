@@ -138,7 +138,8 @@ export const useWeeklyCompetition = (householdId: string | null) => {
     await resetFunction();
     await resetMemberPoints(members);
     const startTime = new Date().toISOString();
-    const endTime = new Date(Date.now() + 30 * 1000).toISOString();
+    const endTime = new Date(Date.now() + 60 * 60 * 24 * 7 * 1000).toISOString();  
+    //  const endTime = new Date(Date.now() + 30 * 1000).toISOString(); // 30 seconds for testing
 
     try {
       const { data: members, error: membersError } = await supabase

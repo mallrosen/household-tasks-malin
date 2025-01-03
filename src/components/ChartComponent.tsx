@@ -3,6 +3,7 @@ import { Pie } from 'react-chartjs-2';
 import "../styles/main.scss";
 import { IChartData } from '../models/IChartData';
 
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const ChartComponent = ({ data }: { data: IChartData }) => {

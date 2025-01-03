@@ -25,6 +25,8 @@ export const Dashboard = () => {
   const navigate = useNavigate();
 
   const createHousehold = async (name: string) => {
+
+
     try {
       if (!userId) {
         setError('You must be logged in to create a household.');
