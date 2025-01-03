@@ -5,6 +5,7 @@ This project is a web application designed to turn household tasks into a game. 
 
 
 Tech Stack
+
 Frontend: [React](https://reactjs.org/)
 Used to build a fast, interactive, and responsive user interface with reusable components.
 
@@ -83,15 +84,15 @@ Weekly Summary: Check the weekly report to see the household's performance and t
 
 ### Household Page!
 ![Household Page](screenshots/household.png)
-*Household Page som visar poängfördelning mellan hushållsmedlemmar.*
+*Household Page showing points distribution among household members*
 
 ### Tasks
 ![Tasks](screenshots/tasks.png)
-*Sidan för att lägga till och slutföra uppgifter.*
+*Page for adding and completing tasks.*
 
 ### Competition Winners!
 ![Winners](screenshots/winners.png)
-*Veckovinnare och möjlighet att starta en ny veckotävling.*
+*Weekly winners and the option to start a new competition.*
 
 Reflections and Lessons Learned
 Throughout the project, I gained valuable insights and improved my technical and organizational skills:
