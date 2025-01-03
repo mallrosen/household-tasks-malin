@@ -95,6 +95,7 @@ Weekly Summary: Check the weekly report to see the household's performance and t
 *Weekly winners and the option to start a new competition.*
 
 Reflections and Lessons Learned
+
 Throughout the project, I gained valuable insights and improved my technical and organizational skills:
 
 Supabase: This backend solution proved user-friendly and powerful, though it required time to master its features. I now have a better understanding of database management.
@@ -108,6 +109,3 @@ Taking Breaks: When stuck on complex problems, stepping away was crucial to rega
 Structure and Consistency: Maintaining a consistent file and folder structure is essential in programming. I realized areas where I could improve my organizational habits and save my work more often.
 
 Adaptability: Every solved problem introduced new challenges, emphasizing the iterative nature of software development. Embracing this mindset helped me stay resilient and solution-focused.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
