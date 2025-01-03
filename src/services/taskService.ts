@@ -61,7 +61,7 @@ export const fetchTasks = async (memberId: string) => {
       .from('Tasks')
       .select('*')
       .eq('member_id', memberId)
-      .eq('deleted', false); // Här filtrerar vi bort borttagna uppgifter
+      .eq('deleted', false);
 
     if (error) {
       console.error('Error fetching tasks:', error.message);

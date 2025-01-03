@@ -52,10 +52,10 @@ export const Overview = ({ householdId, userId, navigateToTasks }: OverviewProps
 
   return (
     <div className='overview'>
+      <h2>Your Total Points:</h2>
+      <h2 style={{ color: 'white' }}>{userPoints !== null ? `${userPoints} p` : 'Points not found'}</h2>
       <h2>Household:</h2>
-      <h3>{household ? `${household.name}` : 'No household found'}</h3>
-      <h2>Your Points:</h2>
-      <h3>{userPoints !== null ? `${userPoints} p` : 'Points not found'}</h3>
+      <h3 style={{color: 'white'}}>{household ? `${household.name}` : 'No household found'}</h3>
       <h2>Household members:</h2>
       <ul className="members-list">
         {householdUsers.map(user => (

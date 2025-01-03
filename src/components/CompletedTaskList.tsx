@@ -3,13 +3,11 @@ import { ITask } from "../models/ITask";
 interface CompletedTasksProps {
   tasks: ITask[];
   onClose: () => void;
-  username: string;
 }
 
 export const CompletedTasksList = ({
   tasks,
   onClose,
-  username,
 }: CompletedTasksProps) => {
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -21,7 +19,7 @@ export const CompletedTasksList = ({
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>Completed Tasks - {username}</h3>
+        <h3>Completed Tasks</h3>
         {tasks.length > 0 ? (
           <ul className="completed-tasks-list">
             {tasks.map(task => (
@@ -29,7 +27,6 @@ export const CompletedTasksList = ({
                 <div className="task-name">
                   {task.name} <span>{task.points} points</span>
                 </div>
-                {task.deleted && <span className="deleted-label">(Deleted)</span>}
               </li>
             ))}
           </ul>

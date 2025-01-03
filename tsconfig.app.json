@@ -22,5 +22,4 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "SKIT/CompletedTasksModal.tsx", "SKIT/useTaskVisibility.ts", "SKIT/superbaseService.ts", "SKIT/useTaskCompetion.ts"]
 }

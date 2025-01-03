@@ -18,7 +18,7 @@ export const TaskList = ({ tasks, onToggle, onRemove }:TaskListProps) => {
       {tasks.map(task => (
         <div key={task.task_id} className="task-item">
           <span style={{ textDecoration: task.status ? 'line-through' : 'none' }}>
-            {task.name} (Difficulty: {task.difficulty}, Points: {task.points})
+            {task.name} (Points: {task.points})
           </span>
           {!task.status && (
             <button className='completeBtn' onClick={() => onToggle(task.task_id, task.points)}>Complete</button>

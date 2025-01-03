@@ -13,47 +13,55 @@ nav {
     rgba(132, 157, 122, 0.6),
     rgba(79, 87, 119, 0.6)
   );
+  z-index: 1000;
 
   .hamburger {
     display: none;
     background: none;
-    border:none;
-    font-size: 2rem;
+    border: none;
+    font-size: typography.$font-size-xxl;
     color: white;
     cursor: pointer;
+
+    &:hover {
+      background: none;
+      color: vars.$secondary-color-dark;
+    }
+  }
+}
+
+ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  gap: 4rem;
+
+  li {
+    padding: 15px 0;
+  }
+
+  a {
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    color: vars.$secondary-color-dark;
+    font-size: typography.$font-size-xl;
+    transition: color 0.3s ease, background-color 0.3s ease;
 
     &:hover {
       color: vars.$primary-color-light;
     }
   }
-
-  ul {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    gap: 4rem;
-
-    li {
-      padding: 15px 0;
-    }
-
-     a {
-        display: flex;
-        justify-content: center;
-        text-decoration: none;
-        color: vars.$secondary-color-dark; 
-        font-size: typography.$font-size-xl;
-        transition: color 0.3s ease;
-      
-        &:hover {
-          color: vars.$primary-color-light; 
-        }
-      }
-  }
 }
 
 @media (max-width: 768px) {
   nav {
+    background: linear-gradient(
+      to right,
+      rgba(132, 157, 122, 0.9),
+      rgba(79, 87, 119, 0.9)
+    );
+
     .hamburger {
       display: block;
     }
@@ -61,33 +69,36 @@ nav {
     ul {
       flex-direction: column;
       position: absolute;
-      top: 100%;
+      top: 55px;
       left: 0;
       width: 100%;
+      gap: 1rem;
       background: linear-gradient(
         to right,
         rgba(132, 157, 122, 0.9),
         rgba(79, 87, 119, 0.9)
       );
-      display: none;
-      gap: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.3s ease, opacity 0.3s ease;
 
       &.open {
-        display: flex;
+        visibility: visible;
+        opacity: 1;
       }
 
       li {
         text-align: center;
-
       }
 
-    .logout-button {
-      color: white;
+      .logout-button {
+        color: white;
 
-      &:hover {
-        color: rgb(247, 143, 143);
+        &:hover {
+          color: rgb(247, 143, 143);
+        }
       }
-    }
     }
   }
 }

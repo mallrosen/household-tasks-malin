@@ -18,6 +18,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const { session, loading } = useAuth();
 
+
   useEffect(() => {
     if (!loading) {
       setIsLoggedIn(!!session);

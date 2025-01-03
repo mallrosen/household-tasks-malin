@@ -56,6 +56,16 @@ export const SignUpForm = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
+        <label>
+          Username:
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </label>
         </label>
         <label>
           Password:
@@ -63,15 +73,6 @@ export const SignUpForm = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Username:
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </label>

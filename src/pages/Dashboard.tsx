@@ -108,8 +108,7 @@ export const Dashboard = () => {
 
   return (
     <div className='dashboardDiv'>
-      <h2>Welcome {username && username[0].toUpperCase() + username.slice(1)}</h2>
-
+      <h1>Welcome {username && username[0].toUpperCase() + username.slice(1)}</h1>
       {!householdCreated && <CreateHouseholdForm onCreate={createHousehold} />}
       {!householdCreated && <JoinHouseholdForm onJoin={joinHousehold} />}
       {householdCreated && householdId && userId && (

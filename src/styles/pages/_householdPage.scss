@@ -61,7 +61,7 @@
           text-decoration: underline;
         }
     
-      }
+      }    
     }
 
     @media (min-width: 768px) {
@@ -105,9 +105,10 @@
       position: relative;
       width: 90%;
       max-width: 500px;
-      max-height: 80vh; /* Begränsa höjden */
-      overflow-y: auto; /* Aktivera lodrät scrollning */
+      max-height: 80vh; 
+      overflow-y: auto; 
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+
   
       .completed-tasks-list {
         list-style: none;

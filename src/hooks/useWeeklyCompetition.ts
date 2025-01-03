@@ -56,68 +56,63 @@ export const useWeeklyCompetition = (householdId: string | null) => {
 
   const determineWinner = async () => {
     if (!householdId) return;
-  
+
     const { data: winners, error } = await supabase.rpc('get_top_participants', {
       _household_id: householdId,
     });
-  
+
     if (error || !winners?.length) {
       console.error('Error determining winners:', error);
       return;
     }
-  
+
     setWinner(winners);
     setShowWinner(true);
     saveWinners(winners);
-  
-    // Avsluta tävlingen
+
     await supabase
       .from('WeeklyCompetition')
       .update({ is_active: false })
       .eq('household_id', householdId)
       .eq('is_active', true);
-  
-    // Nollställ weekly_points för alla medlemmar
+
     await resetMemberPoints(members);
-  
     setIsCompetitionActive(false);
   };
-  // const determineWinner = async () => {
-  //   if (!householdId) return;
-
-  //   const { data: winners, error } = await supabase.rpc('get_top_participants', {
-  //     _household_id: householdId,
-  //   });
-
-  //   if (error || !winners?.length) {
-  //     console.error('Error determining winners:', error);
-  //     return;
-  //   }
-
-  //   setWinner(winners);
-  //   setShowWinner(true);
-  //   saveWinners(winners);
-
-  //   await supabase
-  //     .from('WeeklyCompetition')
-  //     .update({ is_active: false })
-  //     .eq('household_id', householdId)
-  //     .eq('is_active', true);
-
-  //   await resetMemberPoints(members);
-  //   setIsCompetitionActive(false);
-  // };
 
   const saveWinners = (winners: IMembers[]) => {
     localStorage.setItem('winners', JSON.stringify(winners));
     localStorage.setItem('showWinner', 'true');
   };
 
-  const resetFunction = () => {
+  const resetTotalPoints = async (householdId: string): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('Users')
+        .update({ total_points: 0 })
+        .eq('household_id', householdId);
+
+      if (error) {
+        console.error('Error resetting total points:', error);
+      }
+    } catch (error) {
+      console.error('Error resetting total points:', error);
+    }
+  };
+
+  const resetFunction = async () => {
     setShowWinner(false);
     setWinner(null);
+    setMembers([]);
+    setParticipants([]);
+    setIsCompetitionActive(false);
+    setTimeRemaining('');
     localStorage.removeItem('winners');
     localStorage.removeItem('showWinner');
+
+    if (householdId) {
+      await resetTotalPoints(householdId);
+    }
   };
 
   const resetMemberPoints = async (members: IMembers[]): Promise<void> => {
@@ -140,10 +135,10 @@ export const useWeeklyCompetition = (householdId: string | null) => {
   };
 
   const startWeeklyCompetition = async (householdId: string) => {
+    await resetFunction();
     await resetMemberPoints(members);
     const startTime = new Date().toISOString();
-    const endTime = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 1 vecka
-    // const endTime = new Date(Date.now() + 30 * 1000).toISOString(); // 30 sekunder (test)
+    const endTime = new Date(Date.now() + 30 * 1000).toISOString();
 
     try {
       const { data: members, error: membersError } = await supabase
@@ -175,8 +170,6 @@ export const useWeeklyCompetition = (householdId: string | null) => {
     } catch (error) {
       console.error('Error starting competition:', error);
     }
-    resetMemberPoints(members);
-    resetFunction();
   };
 
   const endCompetition = async () => {
@@ -198,8 +191,7 @@ export const useWeeklyCompetition = (householdId: string | null) => {
   const restartCompetition = async () => {
     if (!householdId) return;
 
-    await resetMemberPoints(members);
-    resetFunction();
+    await resetFunction();
     await startWeeklyCompetition(householdId);
   };
 

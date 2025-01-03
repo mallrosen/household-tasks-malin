@@ -5,25 +5,24 @@
 .addTaskForm {
   display: flex;
   padding-bottom: 20px;
-  width: 50%;
   text-align: center;
   display: flex;
   gap: 20px;
   justify-content: center;
-
   margin: 10px;
 
 .add-task-form {
     border-radius: 8px;
     padding: 20px;
-    width: 80%;
+    width: 100%;
     margin-top: 20px;
     text-align: center;
     display: flex;
     flex-direction: column; 
     align-items: center;
     justify-content: center;
-    background-color: vars.$accent-color-light;
+    background-color: vars.$secondary-color-light;
+    border: 1px solid vars.$secondary-color-dark;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
@@ -34,9 +33,9 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         width: 65%;
-        background-color: vars.$background-color;
         margin-bottom: 20px;
         margin-top: 20px;
+        background:none;
     
         &::placeholder {
           color: #4e4c4c; 
@@ -51,7 +50,7 @@
         text-align: center;
         font-size: typo.$font-size;
         color: vars.$primary-color-light;
-        border: 1px solid #ccc;
+        border: 2px solid #ccc;
         border-radius: 5px;
     }
     button {
@@ -64,7 +63,6 @@
         border: 2px solid;
     
         &:hover {
-    
             background-color: vars.$primary-color-dark; 
             color: vars.$primary-color-light;
     

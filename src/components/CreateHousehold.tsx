@@ -30,7 +30,7 @@ export const CreateHouseholdForm = ({ onCreate }: CreateHouseholdFormProps) => {
       <form onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="Household Name"
+        placeholder="Household Name..."
         value={householdName} 
           onChange={(e) => setHouseholdName(e.target.value)}
           required

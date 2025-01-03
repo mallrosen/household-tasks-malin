@@ -1,5 +1,7 @@
 @use '../utils/variables' as vars;
+@use '../base/typography' as typography;
 .dashboardDiv {
+    margin-top: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,11 +9,25 @@
 
     input{
       margin-bottom: 40px;
-    }
+      font-size: 1.1rem;
+      padding: 3px;
+      background: none;
+      border-radius: 5px;
+
+      &::placeholder{
+        color: vars.$accent-color-dark;
+      }
+      }
+    
   
+    h1{
+      color:white;
+      font-size: typography.$font-size-xxl;
+      }
+      
     h2, h3 {
       text-align: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.7rem;
       color: #333;
 
       &::first-letter {
@@ -24,6 +40,7 @@
       width: 100%;
       max-width: 800px;
       margin-top: 1rem;
+
   
       h2 {
         font-size: 1.6rem;
@@ -72,6 +89,7 @@
         width: 50vw;
         border: 1px solid vars.$accent-color;
         border-radius: 10px;
+        
     }
 }
   

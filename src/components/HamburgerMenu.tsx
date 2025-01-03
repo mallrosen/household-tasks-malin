@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 
 interface HamburgerMenuProps {
@@ -9,9 +9,23 @@ interface HamburgerMenuProps {
 
 export const HamburgerMenu = ({ householdId, memberId, handleLogout }: HamburgerMenuProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className="hamburger-menu">
+    <div className="hamburger-menu" ref={menuRef}>
       <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
         ☰
       </button>
@@ -51,4 +65,3 @@ export const HamburgerMenu = ({ householdId, memberId, handleLogout }: Hamburger
     </div>
   );
 };
-

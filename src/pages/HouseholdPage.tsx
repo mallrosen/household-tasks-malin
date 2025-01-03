@@ -22,10 +22,12 @@ export const HouseholdPage = () => {
 
       setSelectedMember(null);
       setCompletedTasks([]);
+      
     } else {
       const tasks = await fetchCompletedTasks(memberId);
       setCompletedTasks(tasks);
       setSelectedMember(memberId);
+
     }
   };
 
@@ -56,36 +58,36 @@ export const HouseholdPage = () => {
   }
 
 
-const generateChartData = (members: IMembers[], users: IUser[]): IChartData => {
-  const labels: string[] = [];
-  const data: number[] = [];
-
-  members.forEach(member => {
-    const user = users.find(u => u.user_id === member.user_id);
-    if (user) {
-      labels.push(user.username || 'Unknown');
-      data.push(user.total_points || 0);
-    }
-  });
-
-  return {
-    labels,
-    datasets: [
-      {
-        data,
-        backgroundColor: [
-          '#F08080', '#194345', '#366223', '#23294F', '#5C7C7E',
-          '#91B383', '#87CEEB', '#BA55D3', '#008080', '#708090', '#FFB256'
-        ],
-        label: '',
-        borderColor: ['#fff'],
-        borderWidth: 2,
-      },
-    ],
+  const generateChartData = (members: IMembers[], users: IUser[]): IChartData => {
+    const labels: string[] = [];
+    const data: number[] = [];
+  
+    members.forEach(member => {
+      const user = users.find(u => u.user_id === member.user_id);
+      if (user) {
+        labels.push(user.username || 'Unknown');
+        data.push(user.total_points || 0);
+      }
+    });
+  
+    return {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: [
+            '#F08080', '#194345', '#366223', '#23294F', '#5C7C7E',
+            '#91B383', '#87CEEB', '#BA55D3', '#008080', '#708090', '#FFB256'
+          ],
+          label: '',
+          borderColor: ['#fff'],
+          borderWidth: 2,
+        },
+      ],
+    };
   };
-};
 
-const chartData = generateChartData(members, users)
+const chartData = generateChartData(members, users);
 
   return (
     <div className="household-page">
@@ -111,12 +113,13 @@ const chartData = generateChartData(members, users)
         <CompletedTasksList
           tasks={completedTasks}
           onClose={() => setSelectedMember(null)}
-          username={
-            users.find(user => user.user_id === selectedMember)?.username ||
-            'Unknown User'
-          }
         />
       )}
     </div>
   );
 };
+
+function fetchUserNames(users: IUser[]) {
+  throw new Error('Function not implemented.');
+}
+

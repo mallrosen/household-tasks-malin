@@ -1,7 +1,7 @@
 import { Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useWeeklyCompetition } from '../hooks/useWeeklyCompetition'
-import "../styles/main.scss";
+import { useWeeklyCompetition } from '../hooks/useWeeklyCompetition';
+import '../styles/main.scss';
 
 interface IParticipant {
   username: string;
